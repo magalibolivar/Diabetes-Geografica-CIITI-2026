@@ -1,0 +1,8 @@
+pandas
+numpy
+geopandas
+scikit-learn
+statsmodels
+matplotlib
+python-docx
+openpyxl

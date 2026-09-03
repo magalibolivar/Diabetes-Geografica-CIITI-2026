@@ -1,0 +1,9 @@
+,Prevalencia de diabetes (%),Indice de ruralidad (no-MSA),Sin cobertura de salud (%),Secundario incompleto (%),Barrera economica al medico (%),Obesidad (%),Inactividad fisica (%),Ingresos bajos <$20k (%)
+Prevalencia de diabetes (%),1.0,0.03,0.33,0.77,0.66,0.75,0.79,0.81
+Indice de ruralidad (no-MSA),0.03,1.0,0.01,-0.27,-0.14,0.35,0.15,0.04
+Sin cobertura de salud (%),0.33,0.01,1.0,0.55,0.84,0.34,0.33,0.46
+Secundario incompleto (%),0.77,-0.27,0.55,1.0,0.77,0.43,0.58,0.85
+Barrera economica al medico (%),0.66,-0.14,0.84,0.77,1.0,0.47,0.52,0.72
+Obesidad (%),0.75,0.35,0.34,0.43,0.47,1.0,0.72,0.5
+Inactividad fisica (%),0.79,0.15,0.33,0.58,0.52,0.72,1.0,0.58
+Ingresos bajos <$20k (%),0.81,0.04,0.46,0.85,0.72,0.5,0.58,1.0

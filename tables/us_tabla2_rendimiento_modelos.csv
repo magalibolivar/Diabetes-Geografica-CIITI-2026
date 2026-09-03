@@ -1,0 +1,3 @@
+modelo,R2,MAE,RMSE
+OLS (in-sample),0.914,0.445,0.548
+Random Forest (5-fold CV),0.805,0.656,0.825
