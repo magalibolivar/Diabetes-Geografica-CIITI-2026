@@ -8,6 +8,9 @@ prevalencia de diabetes, en dos escalas:
   ponderados por peso muestral, a las 51 jurisdicciones. → *OLS R²=0,91 · Random Forest R²(CV)=0,81.*
 - **Global (por país, incluye Argentina):** prevalencia **IDF / Our World in Data (2024)** +
   indicadores del **World Bank** para 193 países. → *la "paradoja de la diabetes" (R²=0,10).*
+- **Carga, evolución y tratamiento:** número absoluto de adultos con diabetes por país (**IDF Atlas**,
+  Argentina = 4,3 M), cambio de prevalencia **2011→2024** (Argentina +8,5 pp) y brecha de tratamiento
+  mundial 1990–2022 (**NCD-RisC**, The Lancet 2024): la prevalencia se duplicó pero solo ~40% recibe tratamiento.
 
 Trabajo del grupo CAETI — Universidad Abierta Interamericana (UAI).
 

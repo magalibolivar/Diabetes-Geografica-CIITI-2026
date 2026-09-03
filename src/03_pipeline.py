@@ -51,7 +51,7 @@ for i in range(len(corr.index)):
         ax.text(j,i,f"{corr.values[i,j]:.2f}",ha="center",va="center",fontsize=8,
                 color="white" if abs(corr.values[i,j])>0.5 else "black")
 fig.colorbar(im,ax=ax,shrink=0.8,label="Coeficiente de Pearson")
-ax.set_title("Tabla 1. Correlacion: prevalencia de diabetes y\ndeterminantes territoriales — estados de EE.UU. (BRFSS 2015)")
+ax.set_title("Correlación entre prevalencia de diabetes y\ndeterminantes territoriales — estados de EE.UU. (BRFSS 2015)")
 fig.tight_layout(); fig.savefig(FIG/"us_tabla1_correlacion.png",bbox_inches="tight"); plt.close(fig)
 
 X=df[FEATURES].values; y=df[TARGET].values; Xs=StandardScaler().fit_transform(X)
@@ -74,7 +74,7 @@ ax[0].barh(imp.index,imp.values,color="#2b6cb0"); ax[0].set_title("Importancia d
 ax[1].scatter(y,y_cv,color="#2b6cb0",edgecolor="white",s=60)
 lims=[min(y.min(),y_cv.min())-0.5,max(y.max(),y_cv.max())+0.5]; ax[1].plot(lims,lims,"--",color="gray",lw=1); ax[1].set_xlim(lims); ax[1].set_ylim(lims)
 ax[1].set_xlabel("Prevalencia observada (%)"); ax[1].set_ylabel("Prevalencia predicha (%) — CV"); ax[1].set_title(f"Real vs. predicho (RF, R2_CV={r2_rf:.2f})")
-fig.suptitle("Figura 1. Desempeno e interpretabilidad — estados de EE.UU.",y=1.03,fontweight="bold")
+fig.suptitle("Desempeño e interpretabilidad del modelo — estados de EE.UU.",y=1.03,fontweight="bold")
 fig.tight_layout(); fig.savefig(FIG/"us_figura1_importancia_desempeno.png",bbox_inches="tight"); plt.close(fig)
 
 Xp=PCA(n_components=2,random_state=42).fit(Xs); Xpca=Xp.transform(Xs)
@@ -97,7 +97,7 @@ cont.plot(column=TARGET,cmap="OrRd",linewidth=0.4,edgecolor="0.5",legend=True,ax
 axes[0].set_title("(a) Prevalencia de diabetes por estado\n(BRFSS 2015, ponderada)"); axes[0].axis("off")
 cont.plot(column="cluster",cmap=plt.matplotlib.colors.ListedColormap(pal),linewidth=0.4,edgecolor="0.5",legend=True,ax=axes[1],categorical=True,legend_kwds={"title":"Cluster","loc":"lower left"})
 axes[1].set_title("(b) Perfiles de riesgo territorial\n(K-Means, k=3)"); axes[1].axis("off")
-fig.suptitle("Figura 2. Distribucion geoespacial de la prevalencia de diabetes y clusters — EE.UU.",fontweight="bold",y=0.99)
+fig.suptitle("Distribución geoespacial de la prevalencia de diabetes y clusters de riesgo — EE.UU.",fontweight="bold",y=0.99)
 fig.tight_layout(); fig.savefig(FIG/"us_figura2_mapas.png",bbox_inches="tight",dpi=170); plt.close(fig)
 print(f"[US] OLS R2={r2_ols:.3f} | RF R2_CV={r2_rf:.3f}")
 
@@ -121,7 +121,7 @@ if len(arg):
     c=arg.geometry.representative_point().iloc[0]
     ax.annotate("Argentina 14,0%",(c.x,c.y),fontsize=9,fontweight="bold",color="#1a202c",ha="right",
                 xytext=(c.x-14,c.y+2),arrowprops=dict(arrowstyle="->",color="#1a202c",lw=1.2))
-ax.set_title("Figura 3. Prevalencia de diabetes por pais (IDF / Our World in Data, 2024)",fontweight="bold"); ax.axis("off")
+ax.set_title("Prevalencia de diabetes por país (IDF / Our World in Data, 2024)",fontweight="bold"); ax.axis("off")
 fig.tight_layout(); fig.savefig(FIG/"global_figura_mapa.png",bbox_inches="tight",dpi=170); plt.close(fig)
 
 fig,ax=plt.subplots(figsize=(8,5.8))
@@ -131,7 +131,67 @@ for _,r in g.iterrows():
 a=g[g.iso3=="ARG"].iloc[0]
 ax.scatter([a.pib_per_capita_usd],[a[GT]],s=120,color="#dd6b20",edgecolor="black",zorder=5,label="Argentina")
 ax.set_xscale("log"); ax.set_xlabel("PBI per capita (USD, escala log)"); ax.set_ylabel("Prevalencia de diabetes (%)")
-ax.set_title("Figura 4. Prevalencia de diabetes vs. PBI per capita\n(paises, 2024)"); ax.legend()
+ax.set_title("Prevalencia de diabetes vs. PBI per cápita (países, 2024)"); ax.legend()
 fig.tight_layout(); fig.savefig(FIG/"global_figura_scatter.png",bbox_inches="tight"); plt.close(fig)
 print(f"[GLOBAL] OLS R2={gols.rsquared:.3f} | N={len(g)} paises | Argentina={a[GT]}%")
+
+# ============= PARTE C - CARGA ABSOLUTA, EVOLUCION Y BRECHA DE TRATAMIENTO =============
+nc = pd.read_csv(DATA/"ncdrisc_mundo_tendencia.csv")
+tot = pd.read_csv(DATA/"idf_totales_globales.csv")
+carga = pd.read_csv(DATA/"idf_carga_paises.csv")
+
+# --- Figura 5b: tendencia mundial (NCD-RisC) + totales globales (IDF, con proyeccion) ---
+fig, ax = plt.subplots(1, 2, figsize=(13, 4.8))
+for sx, cc in [("Men", "#2b6cb0"), ("Women", "#dd6b20")]:
+    s = nc[nc.sexo == sx].sort_values("anio")
+    ax[0].plot(s.anio, s.prevalencia_18mas_pct, color=cc, lw=2, label=f"Prevalencia — {sx}")
+    ax[0].plot(s.anio, s.tratados_pct, color=cc, lw=2, ls="--", label=f"% tratados — {sx}")
+ax[0].set_title("(a) Prevalencia mundial (18+) vs. % tratados (30+)\n(NCD-RisC, 1990–2022)")
+ax[0].set_xlabel("Año"); ax[0].set_ylabel("%"); ax[0].legend(fontsize=7); ax[0].grid(alpha=0.3)
+bars = ax[1].bar(tot.anio.astype(str), tot.millones, color=["#90cdf4","#63b3ed","#dd6b20","#a0aec0"])
+for b, v in zip(bars, tot.millones):
+    ax[1].text(b.get_x()+b.get_width()/2, v+8, f"{v:.0f}M", ha="center", fontsize=9, fontweight="bold")
+ax[1].set_title("(b) Personas con diabetes en el mundo\n(IDF; 2050 = proyección)")
+ax[1].set_ylabel("Millones (20–79 años)"); ax[1].set_ylim(0, tot.millones.max()*1.15)
+fig.suptitle("Evolución mundial de la diabetes y brecha de tratamiento", fontweight="bold", y=1.02)
+fig.tight_layout(); fig.savefig(FIG/"global_figura_tendencia.png", bbox_inches="tight"); plt.close(fig)
+nc.to_csv(TAB/"global_tabla_ncdrisc.csv", index=False)  # respaldo
+tot.to_csv(TAB/"global_tabla_totales.csv", index=False)
+
+# --- Figura 6b: carga absoluta - top 15 paises + Argentina ---
+top = carga.head(15).copy()
+arg_c = carga[carga.pais == "Argentina"]
+if len(arg_c) and "Argentina" not in top.pais.values:
+    top = pd.concat([top, arg_c], ignore_index=True)
+top = top.sort_values("millones")
+colors = ["#dd6b20" if p == "Argentina" else "#2b6cb0" for p in top.pais]
+fig, ax = plt.subplots(figsize=(8.5, 6))
+ax.barh(top.pais, top.millones, color=colors)
+for i, v in enumerate(top.millones):
+    ax.text(v+1, i, f"{v:.1f}", va="center", fontsize=8)
+ax.set_xlabel("Millones de adultos con diabetes (20–79 años)")
+ax.set_title("Carga absoluta de diabetes por país (IDF, 2024)\nTop 15 + Argentina (naranja)")
+fig.tight_layout(); fig.savefig(FIG/"global_figura_carga.png", bbox_inches="tight"); plt.close(fig)
+carga.head(10)[["pais","millones"]].to_csv(TAB/"global_tabla_carga_top10.csv", index=False)
+
+# --- Figura 7: cambio 2011 -> 2024 (puntos porcentuales), top aumentos + Argentina ---
+ch = g.dropna(subset=["cambio_2011_2024_pp"]).copy()
+topc = ch.nlargest(15, "cambio_2011_2024_pp").copy()
+argc = ch[ch.iso3 == "ARG"]
+if len(argc) and "ARG" not in topc.iso3.values:
+    topc = pd.concat([topc, argc], ignore_index=True)
+topc = topc.sort_values("cambio_2011_2024_pp")
+colors = ["#dd6b20" if x == "ARG" else "#38a169" for x in topc.iso3]
+fig, ax = plt.subplots(figsize=(8.5, 6))
+ax.barh(topc.pais, topc.cambio_2011_2024_pp, color=colors)
+for i, v in enumerate(topc.cambio_2011_2024_pp):
+    ax.text(v+0.1, i, f"+{v:.1f}", va="center", fontsize=8)
+ax.set_xlabel("Cambio en la prevalencia 2011 → 2024 (puntos porcentuales)")
+ax.set_title("Mayores aumentos de prevalencia entre rondas IDF\n(2011 vs. 2024) + Argentina (naranja)")
+fig.tight_layout(); fig.savefig(FIG/"global_figura_cambio.png", bbox_inches="tight"); plt.close(fig)
+
+print(f"[C] NCD-RisC mundo 2022: prev~{nc[nc.anio==2022].prevalencia_18mas_pct.mean():.1f}% | "
+      f"tratados~{nc[nc.anio==2022].tratados_pct.mean():.1f}%")
+print(f"[C] Total mundial 2024={tot[tot.anio==2024].millones.values[0]:.0f}M -> 2050={tot[tot.anio==2050].millones.values[0]:.0f}M")
+print(f"[C] Argentina carga={arg_c.millones.values[0]:.2f}M | cambio 2011-2024=+{argc.cambio_2011_2024_pp.values[0]:.1f}pp")
 print("OK - figuras en figures/, tablas en tables/")

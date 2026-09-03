@@ -101,8 +101,11 @@ para("La diabetes mellitus constituye uno de los principales desafíos de salud 
 "identificando a la pobreza de ingresos, la inactividad física, el bajo nivel educativo y la obesidad como "
 "los predictores más fuertes; sorprendentemente, la ruralidad no muestra asociación significativa. A nivel "
 "global, en cambio, los gradientes socioeconómicos clásicos se debilitan e incluso se invierten (R²=0,10), "
-"evidenciando la llamada 'paradoja de la diabetes'. Se discuten las implicancias para el diseño de políticas "
-"de prevención territorializadas.")
+"evidenciando la llamada 'paradoja de la diabetes'. Se cuantifican además la carga absoluta (4,3 millones de "
+"adultos con diabetes en la Argentina), la evolución entre 2011 y 2024 (un aumento de 8,5 puntos "
+"porcentuales, entre los mayores del mundo) y la brecha de tratamiento global (solo ~40% de las personas con "
+"diabetes reciben tratamiento). Se discuten las implicancias para el diseño de políticas de prevención "
+"territorializadas.")
 runs_para([("Palabras clave: ", True, False),
 ("diabetes mellitus; análisis geoespacial; determinantes sociales de la salud; aprendizaje automático; "
 "clustering; BRFSS; ciencia de datos.", False, False)])
@@ -234,6 +237,30 @@ figura(FIG/"global_figura_mapa.png", "Figura 5. Prevalencia de diabetes por paí
 tabla_csv(TAB/"global_tabla_ols.csv", "Tabla 4. Coeficientes del modelo de regresión OLS a escala global (193 países).")
 figura(FIG/"global_figura_scatter.png", "Figura 6. Prevalencia de diabetes frente al PBI per cápita (escala logarítmica), países, 2024.", width=11)
 
+h2("4.5. Carga absoluta, evolución temporal y brecha de tratamiento")
+para("La prevalencia (una tasa) no refleja por sí sola el peso sanitario absoluto. En números de personas, la "
+"carga se concentra en los países más poblados: China (148,0 millones de adultos con diabetes), India (89,8) "
+"y Estados Unidos (38,5) encabezan el ranking mundial (Figura 7). La Argentina, con 4,3 millones de adultos "
+"afectados, ocupa el puesto 24 a nivel global —una cifra elevada para su tamaño poblacional— y la mayor de "
+"América del Sur después de Brasil.")
+figura(FIG/"global_figura_carga.png", "Figura 7. Carga absoluta de diabetes por país (IDF, 2024): 15 países con mayor número de adultos afectados, con la Argentina resaltada.", width=12)
+para("La evolución reciente es igualmente preocupante. Entre las dos últimas rondas del IDF Diabetes Atlas "
+"(2011 y 2024), la prevalencia estimada de la Argentina pasó del 5,5% al 14,0%, un aumento de 8,5 puntos "
+"porcentuales que la ubica entre los mayores incrementos del mundo, en línea con países como Pakistán, Samoa "
+"o Turquía (Figura 8). Cabe señalar que parte de esta variación responde a mejoras metodológicas y de "
+"cobertura de datos entre rondas, por lo que debe leerse como una comparación entre estimaciones más que como "
+"una tendencia epidemiológica pura.")
+figura(FIG/"global_figura_cambio.png", "Figura 8. Mayores aumentos de la prevalencia estimada de diabetes entre las rondas del IDF de 2011 y 2024, con la Argentina resaltada.", width=12)
+para("A escala planetaria, el número de personas con diabetes (20–79 años) se multiplicó de 151 millones en el "
+"año 2000 a 589 millones en 2024, y se proyecta que alcanzará los 852 millones hacia 2050 (Tabla 5, Figura "
+"9b). Paralelamente, los datos de la NCD Risk Factor Collaboration muestran que, si bien la prevalencia "
+"mundial estandarizada por edad se duplicó con creces entre 1990 y 2022 (del ~7% al ~14%), la proporción de "
+"personas con diabetes que recibe tratamiento apenas creció del ~30% a cerca del 40% (Figura 9a). Esta "
+"'brecha de tratamiento' implica que seis de cada diez personas con diabetes en el mundo no están tratadas, "
+"lo que constituye un desafío tan relevante como la prevención primaria.")
+tabla_csv(TAB/"global_tabla_totales.csv", "Tabla 5. Número estimado de personas con diabetes en el mundo (IDF; 2050 = proyección).")
+figura(FIG/"global_figura_tendencia.png", "Figura 9. (a) Prevalencia mundial y proporción de personas tratadas (NCD-RisC, 1990–2022) y (b) número total de personas con diabetes (IDF, con proyección a 2050).", width=16)
+
 h1("5. Discusión")
 para("Los resultados evidencian una fuerte dependencia de escala. A nivel subnacional, donde las poblaciones "
 "comparten un mismo marco institucional y sanitario, los determinantes sociales operan con nitidez: la "
@@ -247,6 +274,12 @@ para("A nivel global, en cambio, la heterogeneidad genética y cultural entre pa
 "elevada en el contexto internacional, la lección de la escala subnacional es la más accionable: las "
 "políticas de prevención deberían focalizarse territorialmente en las jurisdicciones con mayor privación "
 "socioeconómica, más que asumir un patrón uniforme urbano-rural.", first_indent=0.5)
+para("Las dimensiones de carga absoluta, evolución temporal y tratamiento completan el diagnóstico. Que la "
+"Argentina figure entre los países con mayor aumento de prevalencia (+8,5 pp) y con 4,3 millones de adultos "
+"afectados subraya la urgencia del problema; y la brecha de tratamiento mundial —solo cuatro de cada diez "
+"personas con diabetes reciben tratamiento— recuerda que la respuesta no se agota en la prevención, sino que "
+"exige también fortalecer el diagnóstico y el acceso a la atención. La proyección a 852 millones de personas "
+"para 2050 dimensiona la magnitud del desafío sanitario global.", first_indent=0.5)
 
 h1("6. Conclusiones y trabajos futuros")
 para("Se presentó un pipeline reproducible de ciencia de datos que, sobre datos reales, cuantifica los "
