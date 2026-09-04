@@ -1,9 +1,9 @@
-variable,coeficiente,p_valor,significativo_p<0.05
-Intercepto,-1.57,0.0215,True
-Indice de ruralidad (no-MSA),-0.221,0.7377,False
-Sin cobertura de salud (%),-0.216,0.0002,True
-Secundario incompleto (%),0.126,0.1012,False
-Barrera economica al medico (%),0.257,0.0052,True
-Obesidad (%),0.177,0.0,True
-Inactividad fisica (%),0.088,0.0085,True
-Ingresos bajos <$20k (%),0.111,0.0316,True
+variable,coeficiente,EE_robusto_HC3,p_valor,p_robusto_HC3,VIF,signif_robusto_p<0.05
+Intercepto,-1.57,0.609,0.022,0.010,,True
+Indice de ruralidad (no-MSA),-0.221,0.584,0.738,0.705,2.44,False
+Sin cobertura de salud (%),-0.216,0.053,<0.001,<0.001,5.18,True
+Secundario incompleto (%),0.126,0.079,0.101,0.112,7.41,False
+Barrera economica al medico (%),0.257,0.095,0.005,0.007,9.16,True
+Obesidad (%),0.177,0.036,<0.001,<0.001,2.61,True
+Inactividad fisica (%),0.088,0.037,0.008,0.016,2.58,True
+Ingresos bajos <$20k (%),0.111,0.052,0.032,0.033,6.42,True

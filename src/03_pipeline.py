@@ -21,6 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA, GEO = ROOT / "data" / "processed", ROOT / "geo"
@@ -55,10 +56,63 @@ ax.set_title("Correlación entre prevalencia de diabetes y\ndeterminantes territ
 fig.tight_layout(); fig.savefig(FIG/"us_tabla1_correlacion.png",bbox_inches="tight"); plt.close(fig)
 
 X=df[FEATURES].values; y=df[TARGET].values; Xs=StandardScaler().fit_transform(X)
-ols=sm.OLS(y,sm.add_constant(df[FEATURES])).fit()
-pd.DataFrame({"variable":["Intercepto"]+[LAB[f] for f in FEATURES],
-    "coeficiente":ols.params.round(3).values,"p_valor":ols.pvalues.round(4).values,
-    "significativo_p<0.05":(ols.pvalues<0.05).values}).to_csv(TAB/"us_tabla2b_ols_coeficientes.csv",index=False,encoding="utf-8")
+Xc=sm.add_constant(df[FEATURES])
+ols=sm.OLS(y,Xc).fit()                         # OLS clasico
+ols_hc=sm.OLS(y,Xc).fit(cov_type="HC3")        # errores robustos a heterocedasticidad (HC3)
+# --- VIF (factor de inflacion de varianza) por variable ---
+vif=[variance_inflation_factor(Xc.values,i) for i in range(Xc.shape[1])]
+def pfmt(p): return "<0.001" if p<0.001 else f"{p:.3f}"
+# --- Tabla de coeficientes: OLS + EE robustos HC3 + VIF ---
+pd.DataFrame({
+    "variable":["Intercepto"]+[LAB[f] for f in FEATURES],
+    "coeficiente":ols.params.round(3).values,
+    "EE_robusto_HC3":ols_hc.bse.round(3).values,
+    "p_valor":[pfmt(p) for p in ols.pvalues],
+    "p_robusto_HC3":[pfmt(p) for p in ols_hc.pvalues],
+    "VIF":[float("nan")]+[round(v,2) for v in vif[1:]],
+    "signif_robusto_p<0.05":(ols_hc.pvalues<0.05).values,
+}).to_csv(TAB/"us_tabla2b_ols_coeficientes.csv",index=False,encoding="utf-8")
+
+# --- Especificaciones de robustez: completo / sin DC / reducido (sin las 2 de mayor VIF) ---
+vif_feat=pd.Series(vif[1:],index=FEATURES).sort_values(ascending=False)
+drop2=list(vif_feat.index[:2])                 # las dos variables mas colineales
+FEAT_RED=[f for f in FEATURES if f not in drop2]
+def _fit(dsub,feats):
+    m=sm.OLS(dsub[TARGET].values,sm.add_constant(dsub[feats])).fit()
+    return m
+specs={"Completo (N=51)":(df,FEATURES),
+       "Sin DC (N=50)":(df[df.estado!="District of Columbia"],FEATURES),
+       f"Reducido (−{len(drop2)} colineales)":(df,FEAT_RED)}
+rob={}
+for name,(dsub,feats) in specs.items():
+    m=_fit(dsub,feats)
+    col={"N":int(m.nobs),"R2":round(m.rsquared,3),"R2 ajustado":round(m.rsquared_adj,3),
+         "F":round(m.fvalue,2),"p(F)":f"{m.f_pvalue:.1e}"}
+    for f,lab in [("obesidad_pct","β Obesidad"),("pobreza_ingresos_pct","β Ingresos bajos"),
+                  ("inactividad_fisica_pct","β Inactividad"),("indice_ruralidad","β Ruralidad")]:
+        if f in feats:
+            pv=m.pvalues[f]; ptxt="p<0.001" if pv<0.001 else f"p={pv:.3f}"
+            col[lab]=f"{m.params[f]:+.3f} ({ptxt})"
+        else:
+            col[lab]="—"
+    rob[name]=col
+rob_df=pd.DataFrame(rob); rob_df.index.name="Métrica / coeficiente"
+rob_df.to_csv(TAB/"us_tabla_robustez.csv",encoding="utf-8")
+
+# --- Figura de diagnostico de residuos (residuos vs ajustados + Q-Q) ---
+import scipy.stats as _st
+resid=ols.resid; fitted=ols.fittedvalues
+figd,axd=plt.subplots(1,2,figsize=(11,4.3))
+axd[0].scatter(fitted,resid,color="#2b6cb0",edgecolor="white",s=45)
+axd[0].axhline(0,ls="--",color="gray",lw=1)
+axd[0].set_xlabel("Valores ajustados (%)"); axd[0].set_ylabel("Residuos")
+axd[0].set_title("Residuos vs. valores ajustados")
+_st.probplot(resid,dist="norm",plot=axd[1]); axd[1].set_title("Q-Q plot de residuos")
+axd[1].get_lines()[0].set(marker="o",markerfacecolor="#2b6cb0",markeredgecolor="white",markersize=6,ls="")
+axd[1].get_lines()[1].set(color="gray",ls="--")
+figd.suptitle("Diagnóstico de residuos del modelo OLS — estados de EE.UU.",fontweight="bold",y=1.02)
+figd.tight_layout(); figd.savefig(FIG/"us_figura_diagnostico_residuos.png",bbox_inches="tight"); plt.close(figd)
+
 rf=RandomForestRegressor(n_estimators=500,max_depth=5,random_state=42)
 y_cv=cross_val_predict(rf,X,y,cv=KFold(5,shuffle=True,random_state=42)); rf.fit(X,y)
 r2_ols,r2_rf=ols.rsquared,r2_score(y,y_cv)
@@ -99,7 +153,8 @@ cont.plot(column="cluster",cmap=plt.matplotlib.colors.ListedColormap(pal),linewi
 axes[1].set_title("(b) Perfiles de riesgo territorial\n(K-Means, k=3)"); axes[1].axis("off")
 fig.suptitle("Distribución geoespacial de la prevalencia de diabetes y clusters de riesgo — EE.UU.",fontweight="bold",y=0.99)
 fig.tight_layout(); fig.savefig(FIG/"us_figura2_mapas.png",bbox_inches="tight",dpi=170); plt.close(fig)
-print(f"[US] OLS R2={r2_ols:.3f} | RF R2_CV={r2_rf:.3f}")
+print(f"[US] OLS R2={r2_ols:.3f} (R2aj={ols.rsquared_adj:.3f}) | F({ols.df_model:.0f},{ols.df_resid:.0f})={ols.fvalue:.2f} p={ols.f_pvalue:.1e} | RF R2_CV={r2_rf:.3f}")
+print(f"[US] VIF máx={vif_feat.iloc[0]:.1f} ({LAB[vif_feat.index[0]]}) | reducido quita: {[LAB[d] for d in drop2]}")
 
 # ======================= PARTE B - PAISES DEL MUNDO =======================
 GF=["poblacion_rural_pct","gasto_bolsillo_salud_pct","pib_per_capita_usd","poblacion_65mas_pct"]; GT="prevalencia_diabetes_pct"
