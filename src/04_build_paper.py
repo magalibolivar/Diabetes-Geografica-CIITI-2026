@@ -17,7 +17,7 @@ doc = Document()
 s = doc.sections[0]
 s.page_width, s.page_height = Cm(21.0), Cm(29.7)
 s.left_margin = s.right_margin = s.top_margin = s.bottom_margin = Cm(2.54)
-normal = doc.styles["Normal"]; normal.font.name = "Times New Roman"; normal.font.size = Pt(12)
+normal = doc.styles["Normal"]; normal.font.name = "Times New Roman"; normal.font.size = Pt(11)
 normal._element.rPr.rFonts.set(qn('w:eastAsia'), "Times New Roman")
 pf = normal.paragraph_format; pf.alignment = AL.JUSTIFY; pf.space_after = Pt(6); pf.line_spacing = 1.0
 
@@ -25,7 +25,7 @@ def _font(run, name="Times New Roman", size=12, bold=False, italic=False):
     run.font.name = name; run.font.size = Pt(size); run.bold = bold; run.italic = italic
     run._element.rPr.rFonts.set(qn('w:eastAsia'), name)
 
-def para(text="", align=AL.JUSTIFY, bold=False, italic=False, size=12, name="Times New Roman", space_after=6, first_indent=None):
+def para(text="", align=AL.JUSTIFY, bold=False, italic=False, size=11, name="Times New Roman", space_after=6, first_indent=None):
     p = doc.add_paragraph(); p.alignment = align; p.paragraph_format.space_after = Pt(space_after)
     if first_indent: p.paragraph_format.first_line_indent = Cm(first_indent)
     if text: _font(p.add_run(text), name, size, bold, italic)
@@ -33,7 +33,7 @@ def para(text="", align=AL.JUSTIFY, bold=False, italic=False, size=12, name="Tim
 
 def runs_para(segments, align=AL.JUSTIFY, space_after=6):
     p = doc.add_paragraph(); p.alignment = align; p.paragraph_format.space_after = Pt(space_after)
-    for t, b, i in segments: _font(p.add_run(t), "Times New Roman", 12, b, i)
+    for t, b, i in segments: _font(p.add_run(t), "Times New Roman", 11, b, i)
     return p
 
 def h1(text):
@@ -73,65 +73,67 @@ def tabla_csv(csv_path, caption):
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
 
 # --- Portada ---
-para("Determinantes geoespaciales y sociodemográficos de la prevalencia de diabetes: "
-     "un enfoque de ciencia de datos con datos reales (BRFSS 2015 y perspectiva global)",
+para("Modelado multiescala y detección geoespacial de patrones en la prevalencia de diabetes: "
+     "integración de datos reales y comparación de algoritmos (BRFSS 2015 y perspectiva global)",
      align=AL.CENTER, bold=True, size=14, space_after=4)
-para("Geospatial and Sociodemographic Determinants of Diabetes Prevalence: "
-     "A Data Science Approach Using Real-World Data",
+para("Multi-Scale Modeling and Geospatial Pattern Detection of Diabetes Prevalence: "
+     "Real-World Data Integration and Algorithm Comparison (BRFSS 2015 and a Global Perspective)",
      align=AL.CENTER, italic=True, size=11, space_after=10)
 para("Magali Bolivar, María Florencia Rossi, Matías Montiel, Nestor Balich, Franco Balich", align=AL.CENTER, space_after=2)
 para("CAETI - Centro de Altos Estudios en Tecnología Informática", align=AL.CENTER, space_after=0)
 para("Universidad Abierta Interamericana. Informática (UAI)", align=AL.CENTER, space_after=0)
 para("Montes de Oca 745. Ciudad Autónoma de Buenos Aires, Argentina.", align=AL.CENTER, space_after=2)
-para("{MagaliFlorencia.BolivarCruz, MariaFlorencia.Rossi, MatiasNicolas.MontielTorres}@alumnos.uai.edu.ar", align=AL.CENTER, space_after=0)
-para("{nestor.balich, francoadrian.balich}@uai.edu.ar", align=AL.CENTER, space_after=10)
+para("{MagaliFlorencia.BolivarCruz, MariaFlorencia.Rossi, MatiasNicolas.MontielTorres}@alumnos.uai.edu.ar", align=AL.CENTER, italic=True, space_after=0)
+para("{nestor.balich, francoadrian.balich}@uai.edu.ar", align=AL.CENTER, italic=True, space_after=10)
 
 # --- Resumen / Abstract ---
 h1("Resumen")
-para("La diabetes mellitus constituye uno de los principales desafíos de salud pública del siglo XXI: la "
-"prevalencia mundial en adultos se ha más que triplicado en las últimas cuatro décadas. Este trabajo aplica "
-"un pipeline reproducible de ciencia de datos para modelar y cuantificar en qué medida los determinantes "
-"sociales, económicos y del entorno explican la variación geográfica de la prevalencia de diabetes. A "
-"diferencia de estudios basados en datos simulados, aquí se emplean fuentes reales: (i) los microdatos de la "
-"encuesta CDC BRFSS 2015 (441.456 encuestados), agregados de forma ponderada a las 51 jurisdicciones de los "
-"Estados Unidos, y (ii) estimaciones de prevalencia por país de la International Diabetes Federation vía Our "
-"World in Data (2024) combinadas con indicadores del World Bank para 193 países, incluyendo a la Argentina. "
-"El pipeline integra análisis de correlación, regresión lineal (OLS), Random Forest con validación cruzada, "
-"reducción de dimensionalidad (PCA), clustering no supervisado (K-Means) y visualización coroplética, con "
-"verificaciones de robustez estadística (factor de inflación de la varianza, Test F, errores estándar "
-"robustos y diagnóstico de residuos). A nivel "
-"subnacional (EE.UU.) el modelo alcanza un R² de 0,91 (OLS) y 0,81 (Random Forest, validación cruzada), "
-"identificando a la pobreza de ingresos, la inactividad física, el bajo nivel educativo y la obesidad como "
-"los predictores más fuertes; sorprendentemente, la ruralidad no muestra asociación significativa. A nivel "
-"global, en cambio, los gradientes socioeconómicos clásicos se debilitan e incluso se invierten (R²=0,10), "
-"evidenciando la llamada 'paradoja de la diabetes'. Se cuantifican además la carga absoluta (4,3 millones de "
-"adultos con diabetes en la Argentina), la evolución entre 2011 y 2024 (un aumento de 8,5 puntos "
-"porcentuales, entre los mayores del mundo) y la brecha de tratamiento global (solo ~40% de las personas con "
-"diabetes reciben tratamiento). Se discuten las implicancias para el diseño de políticas de prevención "
-"territorializadas.")
+para("La prevalencia de diabetes varía enormemente de una región a otra, y persiste el debate sobre si la "
+"vida rural protege frente a la urbana. Poner a prueba estas ideas con datos reales es, antes que un problema "
+"médico, un desafío de ciencia de datos: la evidencia está dispersa en fuentes muy distintas —encuestas "
+"en formatos crudos, registros de organismos internacionales, indicadores económicos y mapas— que primero hay "
+"que integrar, depurar y modelar de manera reproducible. Este trabajo propone un pipeline que reúne cuatro "
+"fuentes públicas —la encuesta CDC BRFSS 2015 (441.456 respuestas), las estimaciones de la International "
+"Diabetes Federation vía Our World in Data, los indicadores del World Bank para 193 países y las series de la "
+"NCD Risk Factor Collaboration— e incorpora un control de calidad que valida el procesamiento de los "
+"microdatos contra una fuente curada de referencia. Sobre esa base se contrastan un modelo interpretable "
+"(regresión lineal) y uno flexible (Random Forest), respaldados por un análisis de robustez, y se recurre al "
+"agrupamiento de territorios y a mapas temáticos para revelar patrones. El resultado más llamativo es el "
+"contraste entre escalas: dentro de los Estados Unidos, la pobreza, el sedentarismo, la baja escolaridad y la "
+"obesidad explican buena parte de las diferencias (R²=0,81 en validación cruzada) y, contra la intuición, la "
+"ruralidad no aporta nada; a escala global, en cambio, esos gradientes se desdibujan e incluso se invierten, "
+"en lo que se conoce como la 'paradoja de la diabetes'. El aporte central es un marco reproducible de "
+"integración, modelado y detección de patrones, aplicable a otros territorios y problemas; en el plano "
+"sanitario, ubica a la Argentina —con un 14 % de prevalencia y 4,3 millones de adultos afectados— entre los "
+"países de mayor carga y crecimiento reciente.", italic=True)
 runs_para([("Palabras clave: ", True, False),
-("diabetes mellitus; análisis geoespacial; determinantes sociales de la salud; aprendizaje automático; "
-"clustering; BRFSS; ciencia de datos.", False, False)])
+("integración de datos; modelado predictivo; análisis geoespacial; comparación de algoritmos; Random Forest; "
+"clustering territorial; calidad de datos; ciencia de datos.", False, True)])
 h1("Abstract")
-para("Diabetes mellitus is one of the major public-health challenges of the 21st century, with adult "
-"prevalence more than tripling over the last four decades. This work applies a reproducible data-science "
-"pipeline to model how social, economic and environmental determinants explain the geographic variation of "
-"diabetes prevalence. Unlike studies based on simulated data, we use real sources: (i) the CDC BRFSS 2015 "
-"microdata (441,456 respondents), weighted and aggregated to the 51 U.S. jurisdictions, and (ii) "
-"country-level prevalence from the International Diabetes Federation via Our World in Data (2024) combined "
-"with World Bank indicators for 193 countries, including Argentina. At the subnational (U.S.) level the model "
-"reaches R²=0.91 (OLS) and 0.81 (cross-validated Random Forest); income poverty, physical inactivity, low "
-"education and obesity are the strongest predictors, while rurality is not significant. At the global level "
-"the classic socioeconomic gradients weaken or reverse (R²=0.10), illustrating the 'diabetes paradox'.",
-italic=True)
+para("Diabetes prevalence varies widely from one region to another, and it is still debated whether rural "
+"life protects against urban life. Testing these ideas with real data is, before a medical question, a data "
+"challenge: the evidence is scattered across very different sources —raw survey files, international-agency "
+"records, economic indicators and maps— that must first be integrated, cleaned and modeled reproducibly. We "
+"propose a pipeline that brings together four public sources —the CDC BRFSS 2015 survey (441,456 responses), "
+"the International Diabetes Federation estimates via Our World in Data, World Bank indicators for 193 "
+"countries, and NCD-RisC series— with a data-quality step that validates the raw microdata parsing against a "
+"curated reference. On this basis we contrast an interpretable model (linear regression) with a flexible one "
+"(Random Forest), backed by a robustness analysis, and use territorial clustering and thematic maps to reveal "
+"patterns. The most striking finding is the contrast across scales: within the United States, poverty, "
+"physical inactivity, low education and obesity explain much of the variation (R²=0.81 in cross-validation) "
+"and, against intuition, rurality adds nothing; globally, however, those gradients blur and even reverse —the "
+"so-called 'diabetes paradox'. The main contribution is a reproducible framework for integration, modeling "
+"and pattern detection, applicable to other territories and problems; on the health side, it places "
+"Argentina —14% prevalence, 4.3 million affected adults— among the countries with the highest and "
+"fastest-growing burden.", italic=True)
 runs_para([("Keywords: ", True, True),
-("diabetes mellitus; geospatial analysis; social determinants of health; machine learning; clustering; "
-"BRFSS; data science.", False, True)])
+("data integration; predictive modeling; geospatial analysis; algorithm comparison; Random Forest; "
+"territorial clustering; data quality; data science.", False, True)])
 
 h1("1. Introducción")
 para("Las enfermedades no transmisibles (ENT), y en particular la diabetes mellitus tipo 2, representan una "
 "de las principales causas de morbimortalidad y de gasto sanitario a nivel mundial. Según la International "
-"Diabetes Federation (IDF), en 2024 aproximadamente uno de cada nueve adultos vivía con diabetes, y una "
+"Diabetes Federation (IDF) [1], en 2024 aproximadamente uno de cada nueve adultos vivía con diabetes, y una "
 "proporción sustancial permanecía sin diagnóstico. La enfermedad no se distribuye de manera homogénea en el "
 "territorio: su prevalencia varía marcadamente entre regiones, lo que sugiere que factores contextuales —más "
 "allá de los individuales— condicionan el riesgo poblacional.", first_indent=0.5)
@@ -145,35 +147,43 @@ para("El objetivo de este trabajo es modelar y cuantificar, con datos reales y u
 "la variación geográfica de la prevalencia de diabetes. El análisis se plantea en dos escalas "
 "complementarias: una escala subnacional detallada (los estados de los Estados Unidos, a partir de microdatos "
 "de encuesta) y una escala global por país que sitúa a la Argentina en el contexto internacional.", first_indent=0.5)
+para("Detrás de esta pregunta de salud pública hay un problema de datos de considerable dificultad. La "
+"información necesaria no está en un único conjunto ordenado, sino repartida en fuentes heterogéneas —"
+"microdatos de encuesta en formato de ancho fijo, tablas de organismos internacionales, indicadores del "
+"World Bank y geometrías cartográficas— con granularidades, claves y escalas distintas, y con problemas de "
+"calidad que van desde posiciones de columna por validar hasta valores faltantes y unidades dispares. "
+"Integrarlas, depurarlas y modelarlas de forma reproducible es, por sí mismo, buena parte del aporte del "
+"trabajo. El análisis en dos escalas suma además una lección de método: muestra, con números, por qué "
+"extrapolar conclusiones de una escala a otra puede conducir a error —la conocida falacia ecológica—.", first_indent=0.5)
 
 h1("2. Marco conceptual")
-para("El análisis se enmarca en la teoría de los Determinantes Sociales de la Salud (Marmot, 2005; Dahlgren "
-"y Whitehead, 1991), que sostiene que las condiciones en las que las personas nacen, viven y trabajan —el "
+para("El análisis se enmarca en la teoría de los Determinantes Sociales de la Salud [4], [11], que sostiene que "
+"las condiciones en las que las personas nacen, viven y trabajan —el "
 "ingreso, la educación, el empleo y el acceso a servicios— configuran de manera decisiva los resultados de "
-"salud. Para la diabetes tipo 2, una revisión científica de la American Diabetes Association (Hill-Briggs et "
-"al., 2021) documenta que estos determinantes operan tanto de forma directa (a través de la alimentación, la "
+"salud. Para la diabetes tipo 2, una revisión científica de la American Diabetes Association [5] documenta "
+"que estos determinantes operan tanto de forma directa (a través de la alimentación, la "
 "actividad física y el estrés crónico) como indirecta (mediante el acceso al diagnóstico y al tratamiento).",
 first_indent=0.5)
-para("La dimensión territorial de estas desigualdades está ampliamente documentada. Gaskin et al. (2014) "
+para("La dimensión territorial de estas desigualdades está ampliamente documentada. Gaskin et al. [12] "
 "muestran, para los Estados Unidos, que la interacción entre pobreza y lugar de residencia ('the nexus of "
-"race, poverty and place') es un determinante central de las disparidades en diabetes, y Dwyer-Lindgren et "
-"al. (2016) evidencian una marcada heterogeneidad de la prevalencia entre condados. La creencia de un efecto "
+"race, poverty and place') es un determinante central de las disparidades en diabetes, y Dwyer-Lindgren "
+"et al. [13] evidencian una marcada heterogeneidad de la prevalencia entre condados. La creencia de un efecto "
 "protector del entorno rural es, en cambio, controvertida: buena parte de la mayor prevalencia rural se "
 "explica por la privación socioeconómica concomitante más que por la ruralidad en sí. Este trabajo aporta "
 "evidencia cuantitativa sobre ese debate.", first_indent=0.5)
 para("En la Argentina y la región existen antecedentes que confirman la relevancia de la dimensión "
-"territorial. Leveau et al. (2017) identifican conglomerados espacio-temporales de alta y baja mortalidad por "
-"diabetes en la Argentina (1990–2012), y Marro et al. (2017) documentan desigualdades regionales en la "
-"mortalidad y en el acceso a la salud entre jurisdicciones argentinas; un abordaje multinivel posterior "
-"(Marro et al., 2026) refuerza el papel del ambiente en la epidemiología de la enfermedad. En una zona rural "
-"de La Pampa, Ortiz-Basso et al. (2022) reportan una elevada prevalencia de retinopatía diabética, "
-"ilustrando el peso de las complicaciones en contextos rurales. A escala internacional, Santana et al. "
-"(2014) analizan las 'geografías de la diabetes' en Portugal y su vínculo con las condiciones del contexto, "
-"y De La Cruz Castañeda (2026) aplica modelamiento predictivo y distribución geoespacial al gasto en "
+"territorial. Leveau et al. [15] identifican conglomerados espacio-temporales de alta y baja mortalidad por "
+"diabetes en la Argentina (1990–2012), y Marro et al. [16] documentan desigualdades regionales en la "
+"mortalidad y en el acceso a la salud entre jurisdicciones argentinas; un abordaje multinivel posterior [17] "
+"refuerza el papel del ambiente en la epidemiología de la enfermedad. En una zona rural "
+"de La Pampa, Ortiz-Basso et al. [20] reportan una elevada prevalencia de retinopatía diabética, "
+"ilustrando el peso de las complicaciones en contextos rurales. A escala internacional, Santana et al. [18] "
+"analizan las 'geografías de la diabetes' en Portugal y su vínculo con las condiciones del contexto, "
+"y De La Cruz Castañeda [19] aplica modelamiento predictivo y distribución geoespacial al gasto en "
 "pacientes con diabetes en el Perú, en línea metodológica con el presente trabajo.", first_indent=0.5)
 para("En el plano metodológico, la incorporación de sistemas de información geográfica y de técnicas de "
 "aprendizaje automático permite pasar de descripciones agregadas a la identificación de patrones "
-"territoriales y de conglomerados (clusters) de riesgo (James et al., 2021). La combinación de modelos "
+"territoriales y de conglomerados (clusters) de riesgo [14]. La combinación de modelos "
 "interpretables (regresión lineal) con modelos flexibles (Random Forest) y de técnicas no supervisadas (PCA, "
 "K-Means) ofrece una lectura integral: qué variables importan, cuánto, y cómo se agrupan los territorios "
 "según su perfil de riesgo.", first_indent=0.5)
@@ -182,14 +192,15 @@ h1("3. Metodología")
 h2("3.1. Datos y variables")
 para("Se trabajó con dos conjuntos de datos reales y de acceso público. (a) Escala subnacional: los "
 "microdatos de la encuesta Behavioral Risk Factor Surveillance System (BRFSS) 2015 de los Centros para el "
-"Control y la Prevención de Enfermedades (CDC) de EE.UU., que releva a 441.456 adultos. A partir del archivo "
+"Control y la Prevención de Enfermedades (CDC) de EE.UU. [3], que releva a 441.456 adultos. A partir del archivo "
 "crudo de ancho fijo (LLCP2015) se extrajeron, con las posiciones del codebook oficial, las variables de "
 "diabetes diagnosticada (DIABETE3), índice de masa corporal (_BMI5), actividad física (_TOTINDA), cobertura "
 "de salud (HLTHPLN1), barrera económica al médico (MEDCOST), nivel educativo (EDUCA), ingreso (INCOME2), "
 "estatus metropolitano (MSCODE) y el peso muestral final (_LLCPWT). Cada variable se agregó a nivel estatal "
 "mediante promedios ponderados por el peso muestral, obteniendo 51 unidades (50 estados más el Distrito de "
 "Columbia). (b) Escala global: la prevalencia de diabetes por país (adultos 20–79 años) publicada por la IDF "
-"vía Our World in Data (2024), combinada por código ISO con indicadores del World Bank —población rural, "
+"(11.ª ed.; datos 2024) vía Our World in Data [1], [6], combinada por código ISO con indicadores del World "
+"Bank [7] —población rural, "
 "gasto de bolsillo en salud, PBI per cápita y proporción de población de 65 años o más—, resultando en 193 "
 "países con datos completos, incluida la Argentina.")
 para("La variable objetivo es, en ambos casos, la prevalencia de diabetes (%). Las variables explicativas "
@@ -200,12 +211,12 @@ h2("3.2. Pipeline de datos")
 para("El procesamiento se estructuró como un pipeline ETL en Python (pandas, numpy). Para la escala "
 "subnacional se parseó el archivo de ancho fijo de 909 MB, validando las posiciones de columna contra las "
 "distribuciones marginales de la versión curada del conjunto (Kaggle/UCI CDC Diabetes Health Indicators). La "
-"geometría de los estados de EE.UU. y de los países del mundo se cargó mediante GeoPandas para la generación "
+"geometría de los estados de EE.UU. y de los países del mundo se cargó mediante GeoPandas [10] para la generación "
 "de mapas coropléticos. Todo el flujo es reproducible y determinístico (semilla fija).")
 h2("3.3. Técnicas de modelado")
 para("El esquema combina una fase supervisada y una no supervisada. En la fase supervisada se estimaron: (a) "
-"un modelo de Regresión Lineal Ordinaria (OLS, statsmodels) para obtener coeficientes interpretables y su "
-"significación estadística, y (b) un Random Forest (scikit-learn) evaluado por validación cruzada de 5 "
+"un modelo de Regresión Lineal Ordinaria (OLS, statsmodels [9]) para obtener coeficientes interpretables y su "
+"significación estadística, y (b) un Random Forest (scikit-learn [8]) evaluado por validación cruzada de 5 "
 "particiones, que captura no linealidades e interacciones y aporta la importancia relativa de las variables. "
 "En la fase no supervisada se aplicó estandarización, Análisis de Componentes Principales (PCA) y "
 "agrupamiento K-Means (k=3) para segmentar los territorios según su perfil de determinantes.")
@@ -234,8 +245,10 @@ h2("4.2. Modelado supervisado")
 para("La Tabla 1 compara el desempeño de ambos modelos. El OLS explica el 91,4% de la varianza de la "
 "prevalencia estatal (R²=0,914; R²-ajustado=0,900) y el modelo resulta globalmente muy significativo (Test "
 "F(7,43)=65,33; p<0,001), mientras que el Random Forest alcanza un R²=0,805 en validación cruzada, con un "
-"error absoluto medio inferior a 0,66 puntos porcentuales. La Figura 2 muestra la importancia de variables "
-"del Random Forest y la calidad del ajuste (observado vs. predicho).")
+"error absoluto medio inferior a 0,66 puntos porcentuales. Con solo 51 estados, ese R² de validación cruzada "
+"(0,805) es la estimación más honesta de la capacidad predictiva fuera de muestra y acota el optimismo del R² "
+"en muestra. La Figura 2 muestra la importancia de variables del Random Forest y la calidad del ajuste "
+"(observado vs. predicho).")
 tabla_csv(TAB/"us_tabla2_rendimiento_modelos.csv", "Tabla 1. Desempeño de los modelos supervisados (estados de EE.UU.).")
 figura(FIG/"us_figura1_importancia_desempeno.png", "Figura 2. Importancia de variables (Random Forest) y ajuste observado vs. predicho (validación cruzada).", width=15)
 para("La Tabla 2 detalla los coeficientes del OLS junto con sus errores estándar robustos a heterocedasticidad "
@@ -301,7 +314,7 @@ para("La evolución reciente es igualmente preocupante. Entre las dos últimas r
 figura(FIG/"global_figura_cambio.png", "Figura 9. Mayores aumentos de la prevalencia estimada de diabetes entre las rondas del IDF de 2011 y 2024, con la Argentina resaltada.", width=12)
 para("A escala planetaria, el número de personas con diabetes (20–79 años) se multiplicó de 151 millones en el "
 "año 2000 a 589 millones en 2024, y se proyecta que alcanzará los 852 millones hacia 2050 (Tabla 6, Figura "
-"10b). Paralelamente, los datos de la NCD Risk Factor Collaboration muestran que, si bien la prevalencia "
+"10b). Paralelamente, los datos de la NCD Risk Factor Collaboration [2] muestran que, si bien la prevalencia "
 "mundial estandarizada por edad se duplicó con creces entre 1990 y 2022 (del ~7% al ~14%), la proporción de "
 "personas con diabetes que recibe tratamiento apenas creció del ~30% a cerca del 40% (Figura 10a). Esta "
 "'brecha de tratamiento' implica que seis de cada diez personas con diabetes en el mundo no están tratadas, "
@@ -323,7 +336,7 @@ para("A nivel global, en cambio, la heterogeneidad genética y cultural entre pa
 "políticas de prevención deberían focalizarse territorialmente en las jurisdicciones con mayor privación "
 "socioeconómica, más que asumir un patrón uniforme urbano-rural. Esta conclusión es coherente con la "
 "evidencia local, que ya había documentado desigualdades regionales en la mortalidad por diabetes y en el "
-"acceso a la salud entre las jurisdicciones argentinas (Marro et al., 2017; Leveau et al., 2017).",
+"acceso a la salud entre las jurisdicciones argentinas [16], [15].",
 first_indent=0.5)
 para("Las dimensiones de carga absoluta, evolución temporal y tratamiento completan el diagnóstico. Que la "
 "Argentina figure entre los países con mayor aumento de prevalencia (+8,5 pp) y con 4,3 millones de adultos "

@@ -1,6 +1,6 @@
 variable,coeficiente,p_valor,significativo_p<0.05
-Intercepto,15.8246,0.0,True
-Poblacion rural (%),-0.0582,0.0028,True
-Gasto de bolsillo en salud (%),-0.0425,0.0534,False
-PBI per capita (USD),-0.0,0.5785,False
-Poblacion 65+ (%),-0.205,0.0025,True
+Intercepto,15.825,<0.001,True
+Poblacion rural (%),-0.058,0.003,True
+Gasto de bolsillo en salud (%),-0.043,0.053,False
+PBI per capita (USD),-7.80e-06,0.578,False
+Poblacion 65+ (%),-0.205,0.002,True

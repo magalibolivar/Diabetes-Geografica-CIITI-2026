@@ -163,8 +163,12 @@ GLAB={"poblacion_rural_pct":"Poblacion rural (%)","gasto_bolsillo_salud_pct":"Ga
 g=pd.read_csv(DATA/"global_paises.csv")
 g[[GT]+GF].corr().round(2).rename(index=GLAB,columns=GLAB).to_csv(TAB/"global_tabla1_correlacion.csv",encoding="utf-8")
 gols=sm.OLS(g[GT].values,sm.add_constant(g[GF])).fit()
-pd.DataFrame({"variable":["Intercepto"]+[GLAB[f] for f in GF],"coeficiente":gols.params.round(4).values,
-    "p_valor":gols.pvalues.round(4).values,"significativo_p<0.05":(gols.pvalues<0.05).values}).to_csv(TAB/"global_tabla_ols.csv",index=False,encoding="utf-8")
+def _cf(v): return f"{v:.2e}" if abs(v)<0.001 else f"{v:.3f}"   # notacion cientifica para coef. muy pequeños (evita "-0")
+def _pf(p): return "<0.001" if p<0.001 else f"{p:.3f}"
+pd.DataFrame({"variable":["Intercepto"]+[GLAB[f] for f in GF],
+    "coeficiente":[_cf(v) for v in gols.params.values],
+    "p_valor":[_pf(p) for p in gols.pvalues.values],
+    "significativo_p<0.05":(gols.pvalues<0.05).values}).to_csv(TAB/"global_tabla_ols.csv",index=False,encoding="utf-8")
 
 world=gpd.read_file(GEO/"world_countries.geojson").rename(columns={"ISO3166-1-Alpha-3":"iso3"}).merge(g,on="iso3",how="left")
 fig,ax=plt.subplots(figsize=(14,7))
