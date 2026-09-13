@@ -1,0 +1,13 @@
+﻿,Prevalencia de diabetes (%),Población con diabetes bajo tratamiento (%),Screening de glucemia alguna vez (%),Obesidad autorreportada IMC≥30 (%),Presión arterial elevada (%),Inactividad física / sedentarismo (%),Colesterol elevado (%),Tabaquismo actual (%),Población sin cobertura médica privada/OS (%),Pobreza monetaria EPH (%),Hogares con NBI (%),Log10 densidad poblacional
+Prevalencia de diabetes (%),1.0,0.107,0.128,0.336,0.303,0.019,0.002,0.25,-0.155,-0.049,-0.223,-0.438
+Población con diabetes bajo tratamiento (%),0.107,1.0,0.03,0.211,0.124,0.069,0.19,0.258,-0.106,-0.292,0.182,0.013
+Screening de glucemia alguna vez (%),0.128,0.03,1.0,-0.111,-0.322,-0.642,-0.233,0.385,-0.737,-0.573,-0.811,0.48
+Obesidad autorreportada IMC≥30 (%),0.336,0.211,-0.111,1.0,-0.093,-0.042,0.136,0.325,0.084,0.013,0.042,-0.616
+Presión arterial elevada (%),0.303,0.124,-0.322,-0.093,1.0,0.462,-0.186,-0.214,0.391,0.36,0.254,-0.233
+Inactividad física / sedentarismo (%),0.019,0.069,-0.642,-0.042,0.462,1.0,0.075,-0.128,0.371,0.22,0.399,-0.305
+Colesterol elevado (%),0.002,0.19,-0.233,0.136,-0.186,0.075,1.0,0.053,0.089,0.051,0.266,-0.072
+Tabaquismo actual (%),0.25,0.258,0.385,0.325,-0.214,-0.128,0.053,1.0,-0.533,-0.437,-0.492,-0.273
+Población sin cobertura médica privada/OS (%),-0.155,-0.106,-0.737,0.084,0.391,0.371,0.089,-0.533,1.0,0.791,0.673,-0.219
+Pobreza monetaria EPH (%),-0.049,-0.292,-0.573,0.013,0.36,0.22,0.051,-0.437,0.791,1.0,0.435,-0.304
+Hogares con NBI (%),-0.223,0.182,-0.811,0.042,0.254,0.399,0.266,-0.492,0.673,0.435,1.0,-0.131
+Log10 densidad poblacional,-0.438,0.013,0.48,-0.616,-0.233,-0.305,-0.072,-0.273,-0.219,-0.304,-0.131,1.0
