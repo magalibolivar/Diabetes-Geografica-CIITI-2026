@@ -1,0 +1,7 @@
+﻿Variable Explicativa,Coeficiente (Beta),Error Estándar (HC3),Estadístico t,Valor p,Intervalo 95% Conf.,VIF (Colinealidad)
+Constante,7.1128,10.0015,0.71,0.4770,"[-12.49, 26.72]",—
+Obesidad (IMC>=30),0.2058,0.2333,0.88,0.3775,"[-0.25, 0.66]",1.02
+Inactividad Física,0.0327,0.0754,0.43,0.6643,"[-0.12, 0.18]",1.24
+Pobreza EPH,0.0639,0.1507,0.42,0.6718,"[-0.23, 0.36]",2.85
+Sin Obra Social (Censo),-0.0543,0.1490,-0.36,0.7156,"[-0.35, 0.24]",4.33
+NBI Hogares (Censo),-0.0974,0.2571,-0.38,0.7048,"[-0.60, 0.41]",1.99

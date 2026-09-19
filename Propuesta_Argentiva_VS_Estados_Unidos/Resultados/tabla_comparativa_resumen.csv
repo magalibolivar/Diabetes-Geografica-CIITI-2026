@@ -1,0 +1,10 @@
+﻿Métrica / Indicador,Estados Unidos (CDC BRFSS),Argentina (ENFR / INDEC)
+Tamaño muestral territorial (N),51 estados,24 jurisdicciones
+Prevalencia media nacional de diabetes,10.2%,13.0%
+Rango de prevalencia (Mín - Máx),6.8% (Colorado) - 14.8% (Misisipi),8.8% (CABA) - 17.3% (San Luis)
+Correlación Pearson: Diabetes vs. Pobreza (r),"+0.81 (p < 0.001, muy fuerte)","-0.05 (p = 0.82, desacoplada por subdiagnóstico)"
+Correlación Pearson: Diabetes vs. Sedentarismo (r),"+0.79 (p < 0.001, fuerte)","+0.02 (p = 0.92, no lineal)"
+R² Modelo Multivariado OLS (in-sample),"0.91 (F=112.2, p < 0.001)","0.26 (F=0.7, no significativo)"
+R² Validación Cruzada Fuera de Muestra (Generalización),"0.80 (5-fold CV, alta capacidad predictiva)","-0.70 (LOOCV, sobreajuste severo)"
+Brecha de Tratamiento Farmacológico Activo,Condicionada por seguro privado y costo (barrera económica),Rango 32.7% (La Pampa) a 70.0% (Santa Cruz). Gratuito en salud pública.
+Tasa de Screening Glucémico Preventivo,>85% en todos los estados (estandarizado),60.3% (Chaco) a 92.9% (CABA) — severo subregistro norteño

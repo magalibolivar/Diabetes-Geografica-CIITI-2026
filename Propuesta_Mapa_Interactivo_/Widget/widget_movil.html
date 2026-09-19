@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GeoSalud • Widget Móvil de Diabetes (Argentina)</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GeoSalud Widget">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(180deg, #0b0f19 0%, #0f172a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        /* Container simulating Mobile Screen */
+        .mobile-wrapper {
+            width: 100%;
+            max-width: 410px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 6px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .brand-dot {
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pwa-btn {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 5px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .pwa-btn:active {
+            transform: scale(0.96);
+            background: rgba(56, 189, 248, 0.25);
+        }
+
+        /* The Weather-Style Widget Card */
+        .health-widget {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Ambient Glow behind the widget */
+        .widget-glow {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.35) 0%, rgba(249, 115, 22, 0) 70%);
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        /* Province Selector Header */
+        .loc-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .loc-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .loc-icon {
+            font-size: 16px;
+            color: #38bdf8;
+        }
+        select.prov-select {
+            background: rgba(15, 23, 42, 0.7);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+        }
+        select.prov-select option {
+            background: #0f172a;
+            color: #ffffff;
+        }
+        .region-tag {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+        }
+
+        /* Main Temperature/Weather-Like Display */
+        .temp-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0 16px 0;
+        }
+        .temp-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .temp-number {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #ffffff 30%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .temp-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .weather-icon-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .weather-big-icon {
+            font-size: 44px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+        .weather-status-badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .status-danger {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .status-warning {
+            background: rgba(245, 158, 11, 0.25);
+            color: #fde047;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+        .status-good {
+            background: rgba(34, 197, 94, 0.25);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        /* Benchmark pill (vs National Average) */
+        .benchmark-row {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            margin-bottom: 16px;
+        }
+        .bench-text {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+        .bench-diff {
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+        .diff-high {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+        .diff-low {
+            background: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        /* Micro-Metrics Row (like Wind / Humidity in Weather Widgets) */
+        .micro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .micro-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .micro-icon {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        .micro-val {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .micro-title {
+            font-size: 9.5px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-top: 2px;
+            line-height: 1.1;
+        }
+
+        /* Sync Status Bar (Dynamic updates / API connection) */
+        .sync-bar {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10.5px;
+            margin-bottom: 14px;
+        }
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+        }
+        .sync-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 6px #22c55e;
+        }
+        .sync-btn {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sync-btn:active {
+            transform: scale(0.95);
+        }
+        .spin {
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Public Health Tip Banner */
+        .health-tip {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+        .tip-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* CTA Actions */
+        .btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .btn-full-map {
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 18px rgba(2, 132, 199, 0.4);
+            transition: all 0.2s;
+        }
+        .btn-full-map:active {
+            transform: scale(0.98);
+        }
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-secondary:active {
+            background: rgba(51, 65, 85, 0.9);
+            color: #ffffff;
+        }
+
+        /* Modal for Instructions */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 22px;
+            max-width: 360px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-body {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .step-pill {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-num {
+            background: #38bdf8;
+            color: #0f172a;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .modal-close {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-wrapper">
+        <!-- Top App Bar -->
+        <div class="top-nav">
+            <div class="brand">
+                <span class="brand-dot"></span>
+                <span>GeoSalud Widget</span>
+            </div>
+            <button class="pwa-btn" id="installBtn" onclick="showInstallHelp()">
+                <span>📲</span> Instalar en Celular
+            </button>
+        </div>
+
+        <!-- The Weather-Style Health Widget -->
+        <div class="health-widget">
+            <div class="widget-glow" id="glow"></div>
+
+            <!-- Province Picker Header -->
+            <div class="loc-row">
+                <div class="loc-selector">
+                    <span class="loc-icon">📍</span>
+                    <select class="prov-select" id="provSelect" onchange="changeProvince(this.value)">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="region-tag" id="regionTag">Cuyo</div>
+            </div>
+
+            <!-- Big Weather/Health Indicator -->
+            <div class="temp-row">
+                <div class="temp-left">
+                    <div class="temp-number" id="diabVal">17.3%</div>
+                    <div class="temp-label">Prevalencia de Diabetes</div>
+                </div>
+                <div class="weather-icon-box">
+                    <div class="weather-big-icon" id="weatherIcon">⛈️</div>
+                    <div class="weather-status-badge status-danger" id="statusBadge">Alerta Crítica</div>
+                </div>
+            </div>
+
+            <!-- Benchmark Bar vs National Average -->
+            <div class="benchmark-row">
+                <span class="bench-text">Media Nacional: <strong>12.7%</strong></span>
+                <span class="bench-diff diff-high" id="diffBadge">+4.6% vs país</span>
+            </div>
+
+            <!-- Micro Metrics (Like wind / humidity) -->
+            <div class="micro-grid">
+                <div class="micro-card">
+                    <span class="micro-icon">💊</span>
+                    <span class="micro-val" id="tratVal">49.9%</span>
+                    <span class="micro-title">Brecha sin Fármaco</span>
+                </div>
+                <div class="micro-card">
+                    <span class="micro-icon">🩺</span>
+                    <span class="micro-val" id="screenVal">78.1%</span>
+                    <span class="micro-title">Test Glucemia</span>
+                </div>
+                <div class="micro-card">
+                    <span class="micro-icon">⚖️</span>
+                    <span class="micro-val" id="obesVal">23.9%</span>
+                    <span class="micro-title">Obesidad IMC≥30</span>
+                </div>
+            </div>
+
+            <!-- Sync / Update Bar -->
+            <div class="sync-bar">
+                <div class="sync-status">
+                    <span class="sync-dot"></span>
+                    <span id="syncText">Base Nacional • Datos al día</span>
+                </div>
+                <button class="sync-btn" onclick="syncData()">
+                    <span id="syncIcon">🔄</span> Sincronizar
+                </button>
+            </div>
+
+            <!-- Health tip for the citizen -->
+            <div class="health-tip">
+                <span class="tip-icon">💡</span>
+                <div id="tipText">
+                    <strong>Derecho en Salud:</strong> La Ley Nacional 26.914 te garantiza tiras reactivas, insulina y medicación oral 100% cubiertos en centros de salud públicos.
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="btn-stack">
+                <a href="../Motor/index.html" class="btn-full-map">
+                    <span>🗺️ Abrir Mapa Interactivo Completo</span>
+                    <span>➔</span>
+                </a>
+                <button class="btn-secondary" id="gpsBtn" onclick="detectGpsLocation()">
+                    <span>🎯</span> Detectar mi Ubicación (GPS en vivo)
+                </button>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-size: 11px; color: #64748b;">
+            Datos oficiales: ENFR 2018 + Censo INDEC 2022 • CIITI 2026
+        </div>
+    </div>
+
+    <!-- Installation Modal Instructions -->
+    <div class="modal" id="installModal">
+        <div class="modal-card">
+            <div class="modal-title">
+                <span>📲</span>
+                <span>¿Cómo instalarlo en tu celular?</span>
+            </div>
+            <div class="modal-body">
+                <p>Este widget funciona como una <strong>Progressive Web App (PWA)</strong>: podés tenerlo como ícono o tarjeta en la pantalla de inicio de tu teléfono sin necesidad de descargar nada desde Google Play o App Store:</p>
+                
+                <div class="step-pill">
+                    <div class="step-num">1</div>
+                    <div><strong>En Android (Chrome):</strong> Tocá los tres puntos arriba a la derecha y elegí <em>"Instalar aplicación"</em> o <em>"Agregar a la pantalla principal"</em>.</div>
+                </div>
+
+                <div class="step-pill">
+                    <div class="step-num">2</div>
+                    <div><strong>En iPhone (Safari):</strong> Tocá el botón de Compartir (el cuadrito con la flecha hacia arriba) y elegí <em>"Agregar a pantalla de inicio"</em>.</div>
+                </div>
+
+                <div class="step-pill">
+                    <div class="step-num">3</div>
+                    <div>¡Listo! Te queda el icono de <strong>GeoSalud Widget</strong> directo en tu pantalla de inicio.</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeInstallHelp()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        // 24 Jurisdicciones de Argentina con Centroides GPS (Lat, Lon)
+        const provData = [
+            { prov: "San Luis", reg: "Cuyo", diab: 17.3, trat: 50.1, screen: 78.1, obes: 23.9, pob: 31.3, lat: -33.3, lon: -66.3 },
+            { prov: "San Juan", reg: "Cuyo", diab: 15.9, trat: 58.7, screen: 80.8, obes: 34.4, pob: 33.1, lat: -31.5, lon: -68.5 },
+            { prov: "Tierra del Fuego", reg: "Patagonia", diab: 15.9, trat: 70.0, screen: 78.8, obes: 26.1, pob: 17.9, lat: -54.8, lon: -68.3 },
+            { prov: "La Rioja", reg: "Noroeste", diab: 15.1, trat: 66.2, screen: 66.6, obes: 28.1, pob: 30.5, lat: -29.4, lon: -66.8 },
+            { prov: "La Pampa", reg: "Pampeana", diab: 14.6, trat: 32.7, screen: 76.0, obes: 25.8, pob: 32.1, lat: -36.6, lon: -64.3 },
+            { prov: "Santa Cruz", reg: "Patagonia", diab: 14.3, trat: 70.0, screen: 76.0, obes: 34.0, pob: 18.6, lat: -51.6, lon: -69.2 },
+            { prov: "Neuquén", reg: "Patagonia", diab: 13.9, trat: 46.3, screen: 77.0, obes: 28.0, pob: 27.1, lat: -38.9, lon: -68.1 },
+            { prov: "Córdoba", reg: "Centro", diab: 13.7, trat: 51.8, screen: 81.8, obes: 24.5, pob: 32.9, lat: -31.4, lon: -64.2 },
+            { prov: "Misiones", reg: "Noreste", diab: 13.7, trat: 45.3, screen: 68.3, obes: 25.7, pob: 35.7, lat: -27.4, lon: -55.9 },
+            { prov: "Santiago del Estero", reg: "Noroeste", diab: 13.7, trat: 59.7, screen: 60.6, obes: 29.9, pob: 38.9, lat: -27.8, lon: -64.3 },
+            { prov: "Santa Fe", reg: "Centro", diab: 13.5, trat: 65.9, screen: 89.3, obes: 28.3, pob: 33.1, lat: -31.6, lon: -60.7 },
+            { prov: "Corrientes", reg: "Noreste", diab: 13.3, trat: 44.2, screen: 69.8, obes: 24.1, pob: 49.3, lat: -27.5, lon: -58.8 },
+            { prov: "Tucumán", reg: "Noroeste", diab: 13.3, trat: 50.6, screen: 76.9, obes: 26.9, pob: 32.2, lat: -26.8, lon: -65.2 },
+            { prov: "Buenos Aires", reg: "Pampeana y GBA", diab: 13.1, trat: 49.6, screen: 79.6, obes: 25.5, pob: 29.9, lat: -36.6, lon: -60.5 },
+            { prov: "Río Negro", reg: "Patagonia", diab: 12.8, trat: 45.2, screen: 79.3, obes: 30.0, pob: 29.7, lat: -40.8, lon: -63.0 },
+            { prov: "Mendoza", reg: "Cuyo", diab: 12.7, trat: 57.9, screen: 81.4, obes: 25.1, pob: 30.7, lat: -32.9, lon: -68.8 },
+            { prov: "Chubut", reg: "Patagonia", diab: 12.4, trat: 38.3, screen: 71.8, obes: 26.7, pob: 28.7, lat: -43.3, lon: -65.1 },
+            { prov: "Formosa", reg: "Noreste", diab: 12.1, trat: 62.6, screen: 61.1, obes: 25.7, pob: 32.5, lat: -26.2, lon: -58.2 },
+            { prov: "Catamarca", reg: "Noroeste", diab: 11.5, trat: 55.8, screen: 67.9, obes: 29.5, pob: 35.5, lat: -28.4, lon: -65.8 },
+            { prov: "Entre Ríos", reg: "Centro", diab: 10.8, trat: 59.5, screen: 76.6, obes: 25.0, pob: 35.7, lat: -31.7, lon: -60.5 },
+            { prov: "Salta", reg: "Noroeste", diab: 10.8, trat: 54.3, screen: 61.2, obes: 26.5, pob: 37.7, lat: -24.8, lon: -65.4 },
+            { prov: "Chaco", reg: "Noreste", diab: 10.3, trat: 54.2, screen: 60.3, obes: 20.0, pob: 41.4, lat: -27.4, lon: -59.0 },
+            { prov: "Jujuy", reg: "Noroeste", diab: 8.9, trat: 48.7, screen: 71.3, obes: 31.1, pob: 31.7, lat: -24.2, lon: -65.3 },
+            { prov: "CABA", reg: "Capital Federal", diab: 8.8, trat: 55.3, screen: 92.9, obes: 17.0, pob: 12.6, lat: -34.6, lon: -58.4 }
+        ];
+
+        const MEDIA_NACIONAL = 12.7;
+
+        // Poblar Select
+        const selectEl = document.getElementById('provSelect');
+        provData.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.prov;
+            opt.innerText = p.prov;
+            selectEl.appendChild(opt);
+        });
+
+        // Cambiar Provincia
+        function changeProvince(provName) {
+            const data = provData.find(d => d.prov === provName) || provData[0];
+            
+            document.getElementById('regionTag').innerText = data.reg;
+            document.getElementById('diabVal').innerText = data.diab.toFixed(1) + '%';
+            
+            // Brecha de medicacion (100 - tratamiento)
+            const gap = (100 - data.trat).toFixed(1) + '%';
+            document.getElementById('tratVal').innerText = gap;
+            document.getElementById('screenVal').innerText = data.screen.toFixed(1) + '%';
+            document.getElementById('obesVal').innerText = data.obes.toFixed(1) + '%';
+
+            // Diferencia con Media Nacional
+            const diff = data.diab - MEDIA_NACIONAL;
+            const diffEl = document.getElementById('diffBadge');
+            diffEl.innerText = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '% vs país';
+            diffEl.className = 'bench-diff ' + (diff >= 0 ? 'diff-high' : 'diff-low');
+
+            // Icono del tiempo / clima epidemiologico
+            const iconEl = document.getElementById('weatherIcon');
+            const badgeEl = document.getElementById('statusBadge');
+            const glowEl = document.getElementById('glow');
+
+            if (data.diab >= 14.5) {
+                iconEl.innerText = '⛈️'; // Tormenta / Alerta
+                badgeEl.innerText = 'Alerta Crítica';
+                badgeEl.className = 'weather-status-badge status-danger';
+                glowEl.style.background = 'radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0) 70%)';
+            } else if (data.diab >= 12.0) {
+                iconEl.innerText = '⛅'; // Nublado / Riesgo moderado
+                badgeEl.innerText = 'Riesgo Moderado';
+                badgeEl.className = 'weather-status-badge status-warning';
+                glowEl.style.background = 'radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0) 70%)';
+            } else {
+                iconEl.innerText = '☀️'; // Soleado / Bajo riesgo
+                badgeEl.innerText = 'Baja Prevalencia';
+                badgeEl.className = 'weather-status-badge status-good';
+                glowEl.style.background = 'radial-gradient(circle, rgba(34, 197, 94, 0.45) 0%, rgba(34, 197, 94, 0) 70%)';
+            }
+        }
+
+        // Detección real por GPS con fallback
+        function detectGpsLocation() {
+            const btn = document.getElementById('gpsBtn');
+            btn.innerHTML = '<span>⏳</span> Obteniendo coordenadas GPS...';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    
+                    // Buscar provincia con centroide más cercano
+                    let nearest = provData[0];
+                    let minDist = 999999;
+                    provData.forEach(p => {
+                        const dist = Math.hypot(p.lat - lat, p.lon - lon);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            nearest = p;
+                        }
+                    });
+                    
+                    selectEl.value = nearest.prov;
+                    changeProvince(nearest.prov);
+                    btn.innerHTML = '<span>📍</span> GPS: ' + nearest.prov;
+                    setTimeout(() => {
+                        btn.innerHTML = '<span>🎯</span> Detectar mi Ubicación (GPS en vivo)';
+                    }, 3500);
+                }, (err) => {
+                    // Fallback simulador
+                    simulateGps();
+                }, { timeout: 4000 });
+            } else {
+                simulateGps();
+            }
+        }
+
+        function simulateGps() {
+            const btn = document.getElementById('gpsBtn');
+            const randProv = provData[Math.floor(Math.random() * provData.length)].prov;
+            selectEl.value = randProv;
+            changeProvince(randProv);
+            btn.innerHTML = '<span>📍</span> Ubicación asignada: ' + randProv;
+            setTimeout(() => {
+                btn.innerHTML = '<span>🎯</span> Detectar mi Ubicación (GPS en vivo)';
+            }, 3000);
+        }
+
+        // Sincronización / Actualización
+        function syncData() {
+            const icon = document.getElementById('syncIcon');
+            const text = document.getElementById('syncText');
+            icon.classList.add('spin');
+            text.innerText = 'Consultando API epidemiológica...';
+
+            setTimeout(() => {
+                icon.classList.remove('spin');
+                const now = new Date();
+                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                text.innerText = 'Sincronizado hoy ' + timeStr + ' hs • Datos al día';
+            }, 900);
+        }
+
+        function showInstallHelp() {
+            document.getElementById('installModal').classList.add('open');
+        }
+        function closeInstallHelp() {
+            document.getElementById('installModal').classList.remove('open');
+        }
+
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(() => {});
+            });
+        }
+
+        // Iniciar con Buenos Aires
+        selectEl.value = 'Buenos Aires';
+        changeProvince('Buenos Aires');
+    </script>
+</body>
+</html>

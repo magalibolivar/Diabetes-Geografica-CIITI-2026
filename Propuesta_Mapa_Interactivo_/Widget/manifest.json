@@ -1,0 +1,32 @@
+{
+  "name": "GeoSalud Argentina — Widget de Diabetes",
+  "short_name": "GeoSalud Widget",
+  "description": "Widget de salud y mapa interactivo geoespacial de factores de riesgo y diabetes tipo 2 en Argentina (CIITI 2026)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0284c7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical", "navigation"],
+  "shortcuts": [
+    {
+      "name": "Modo Widget",
+      "url": "./widget_movil.html",
+      "description": "Abrir el widget de bolsillo para ver el semáforo de salud de tu provincia"
+    },
+    {
+      "name": "Mapa Completo",
+      "url": "./index.html",
+      "description": "Explorar el mapa interactivo estilo Windy con las 7 capas"
+    }
+  ]
+}
