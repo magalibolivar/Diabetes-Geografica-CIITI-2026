@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#f97316" />
+    </linearGradient>
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect x="24" y="24" width="464" height="464" rx="110" fill="url(#bgGrad)" filter="url(#shadow)"/>
+  
+  <!-- Subtle circular grid/radar lines -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  <circle cx="256" cy="256" r="130" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="8 8"/>
+  <circle cx="256" cy="256" r="70" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+
+  <!-- Blood Glucose Drop / Location Pin Icon -->
+  <path d="M256 95 C256 95 160 230 160 300 C160 353 203 396 256 396 C309 396 352 353 352 300 C352 230 256 95 256 95 Z" 
+        fill="url(#crossGrad)" filter="url(#shadow)"/>
+
+  <!-- Inner Health Cross -->
+  <path d="M242 220 H270 V275 H325 V303 H270 V358 H242 V303 H187 V275 H242 Z" 
+        fill="#ffffff" opacity="0.95"/>
+
+  <!-- Small pulse line at bottom -->
+  <path d="M120 440 L190 440 L210 420 L235 465 L260 410 L285 450 L305 440 L392 440" 
+        fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

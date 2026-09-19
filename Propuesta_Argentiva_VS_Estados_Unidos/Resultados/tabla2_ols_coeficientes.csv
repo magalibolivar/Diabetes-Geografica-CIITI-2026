@@ -1,0 +1,7 @@
+﻿Determinante Sociodemográfico,EE.UU. Coef. β (HC3),EE.UU. VIF,Argentina Coef. β (HC3),Argentina VIF
+Intercepto,-1.475 (p=0.016),-,+14.581 (p=0.133),-
+Obesidad (%),+0.180 (p=<0.001),2.2,+0.053 (p=0.831),2.1
+Sedentarismo (%),+0.095 (p=0.026),2.5,-0.002 (p=0.983),1.5
+Pobreza / Bajos Ingresos (%),+0.137 (p=0.004),4.0,+0.017 (p=0.888),3.4
+Sin Cobertura Privada / OS (%),-0.096 (p=0.006),1.5,-0.056 (p=0.555),3.4
+Educación / Densidad,+0.202 (p=0.001),4.4,-1.162 (p=0.397),2.4

@@ -1,0 +1,5 @@
+﻿Modelo,N,R2_Muestra,R2_Ajustado,p_valor_F,R2_LOOCV,MAE_LOOCV,Diagnóstico
+"OLS Completo (6 variables: obesidad, sedentarismo, tabaco, presión, NBI, densidad)",24,0.385,0.168,0.164,-0.291,1.82,"Sobreajuste severo: p=0.16 (no significativo), R2_LOOCV negativo"
+"OLS Reducido (3 variables: obesidad, presión, NBI)",24,0.338,0.239,0.037,-0.1,1.59,Ajusta en muestra (p=0.037) pero capacidad predictiva nula fuera de muestra (R2≈0.007)
+OLS Univariado (1 variable: log_densidad),24,0.192,0.155,0.032,0.069,1.63,"Único modelo con LOOCV positivo modesto (0.069), pero dependiente de CABA (outlier)"
+"Random Forest (5-fold CV, 6 variables)",24,—,—,—,-0.324,1.79,R2 CV negativo; algoritmos no lineales requieren mayor N que las 24 unidades provinciales

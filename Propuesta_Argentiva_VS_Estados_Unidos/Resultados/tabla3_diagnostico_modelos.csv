@@ -1,0 +1,4 @@
+﻿Modelo y Algoritmo,EE.UU. R² (Ajustado),EE.UU. Error MAE,Argentina R² (Ajustado),Argentina Error MAE,Diagnóstico Metodológico
+OLS Multivariado (Muestra completa),0.891 (0.878),0.50%,0.264 (0.059),1.44%,EE.UU. altamente significativo (p<0.001); Argentina no significativo (p=0.16)
+"Validación Cruzada OLS (LOOCV en Arg, 5-Fold en US)",0.842,0.59%,-0.701,2.12%,Colapso predictivo en Argentina (R² negativo): sobreajuste por N=24 reducido
+Random Forest Regressor (5-Fold CV),0.802,0.66%,-0.802,2.20%,Random Forest generaliza con alta precisión en EE.UU.; falla en Arg por falta de N

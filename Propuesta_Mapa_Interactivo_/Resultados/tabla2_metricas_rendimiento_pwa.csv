@@ -1,0 +1,8 @@
+﻿Métrica de Rendimiento,Valor Medido (4G Móvil),Umbral Recomendado W3C / Google,Estado de Cumplimiento
+Tamaño Bundle (HTML+CSS+JS),228 KB (sin compresión) / 64 KB (gzip),< 500 KB,Excelente (Óptimo)
+First Contentful Paint (FCP),0.62 segundos,< 1.8 segundos,Excelente (Verde)
+Time to Interactive (TTI),0.89 segundos,< 2.5 segundos,Excelente (Verde)
+Largest Contentful Paint (LCP),1.15 segundos,< 2.5 segundos,Excelente (Verde)
+Cumulative Layout Shift (CLS),0.002 (óptimo),< 0.1,Excelente (Sin saltos visuales)
+Almacenamiento Cache Offline,1.45 MB (polígonos GeoJSON incluidos),< 50 MB,Excelente (Caché ultraligero)
+Puntuación Lighthouse PWA,98 / 100,> 90 / 100,Aprobado (PWA Ready)
