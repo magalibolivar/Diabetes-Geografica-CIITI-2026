@@ -67,7 +67,7 @@ La idea más potente y valiosa del trabajo es que **la relación entre pobreza y
 | Columna en el CSV | Fuente Oficial | Cuadro / Hoja Exacta | ¿Qué mide en la vida real? |
 | :--- | :--- | :--- | :--- |
 | `provincia` | INDEC | Cartografía oficial | Nombre de la jurisdicción (23 provincias + CABA). |
-| `tasa_diabetes_pct` | **ENFR 2018** (MSAL/INDEC) | **Cuadro 7.3** | % de adultos que declararon tener diabetes o glucemia elevada (o se midió en la muestra). |
+| `tasa_diabetes_pct` | **ENFR 2018** (MSAL/INDEC) | **Cuadro 7.3** | % de adultos con diagnóstico previo de diabetes o glucemia elevada otorgado por personal de salud (100% autorreporte). |
 | `cv_diabetes_pct` | **ENFR 2018** | **Cuadro 7.3** | Coeficiente de variación muestral (todos <12,5%, validando calidad estadística). |
 | `tratamiento_diabetes_pct` | **ENFR 2018** | **Cuadro 7.5** | % de diagnosticados bajo tratamiento farmacológico activo (pastillas o insulina). |
 | `medicion_glucemia_pct` | **ENFR 2018** | **Cuadro 7.1** | % de adultos que se midió la glucemia alguna vez en su vida (**screening**). |
