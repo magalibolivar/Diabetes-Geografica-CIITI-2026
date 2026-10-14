@@ -47,11 +47,16 @@ La idea más potente y valiosa del trabajo es que **la relación entre pobreza y
 
 ---
 
-## 📊 3. ¿Por qué colapsa el Machine Learning en Argentina ($R^2 < 0$)?
-* **En EE.UU.:** Hay 51 estados. Aunque 51 observaciones también es una muestra reducida, los factores de riesgo (pobreza, obesidad, sedentarismo) van de la mano de la diabetes con correlaciones altísimas ($r \approx 0,80$). La relación es limpia y lineal, permitiendo $R^2 = 0,80$.
-* **En Argentina:** Hay 24 provincias. La relación entre pobreza y prevalencia declarada está distorsionada por la falta de detección clínica en las provincias vulnerables. Al no haber una relación lineal limpia, los algoritmos complejos intentan memorizar el ruido y fallan catastróficamente fuera de muestra.
-* **¿Qué significa $R^2 = -0,70$ negativo?** Matemáticamente significa que el modelo es **peor que un predictor ingenuo** que simplemente le asigne a todas las provincias el promedio general ($\bar{y}$).
-* **Conclusión metodológica del paper:** Con 24 provincias y subdiagnóstico, **no sirve forzar Machine Learning predictivo**. La respuesta honesta y rigurosa de la ciencia de datos en salud es construir **atlas geoespaciales descriptivos** para orientar operativos de testeo territorial en el terreno.
+## 📊 3. ¿Por qué falla el Machine Learning en Argentina ($R^2 < 0$)?
+* **En EE.UU.:** Hay 51 estados. Aunque 51 observaciones también es una muestra reducida, los factores de riesgo (pobreza, obesidad, sedentarismo) van de la mano de la diabetes con correlaciones altísimas ($r \approx 0,80$). La relación es limpia y lineal, permitiendo $R^2 = 0,802$ en Random Forest y un error absoluto medio de solo $\text{MAE} = 0,59\% \pm 0,04\%$ con mínima variabilidad entre folds.
+* **En Argentina:** Hay 24 provincias. La relación entre pobreza y prevalencia declarada está distorsionada por la falta de detección clínica en las provincias vulnerables. Al no haber una relación lineal limpia, los algoritmos intentan memorizar el ruido y fallan catastróficamente fuera de muestra.
+* **¿Qué significa $R^2 = -0,701$ negativo? (Demostración matemática):**
+  1. **El Estimador Naive Baseline (Modelo de Referencia Ingenuo):** Si ignoramos todas las variables y simplemente predecimos la media histórica constante ($\hat{y} = \bar{y} = 13,0\%$), el error absoluto medio es $\text{MAE} = 1,59\%$ y la varianza no explicada es $\text{Var}(y) = \text{MSE}_{\text{baseline}} = 4,24$. Por definición, este baseline tiene $R^2 = 0$.
+  2. **El Modelo OLS en Validación Cruzada (LOOCV):** Cuando el modelo predice fuera de muestra (Leave-One-Out determinístico sobre las 24 provincias), comete un error absoluto medio de $\text{MAE} = 2,12\%$ y un error cuadrático medio de $\text{MSE}_{\text{LOOCV}} = 7,21$.
+  3. **La Fórmula de $R^2$:** $R^2_{\text{CV}} = 1 - \frac{\text{MSE}_{\text{modelo}}}{\text{MSE}_{\text{baseline}}} = 1 - \frac{7,21}{4,24} = 1 - 1,701 = -0,701$.
+  4. **Conclusión:** El modelo predictivo comete un **70,1% más de error cuadrático** que si simplemente predijéramos la media constante sin usar ninguna variable. Es decir, agregar la pobreza y la cobertura médica agrega ruido y empeora la predicción.
+* **Hipótesis del subdiagnóstico vs. Prueba definitiva:** La correlación $r = -0,74$ entre NBI y controles de glucemia es un indicio o *proxy ecológico* muy fuerte, pero no es una medición fija de subreporte. Por eso, el paper propone como trabajo futuro contrastar los datos con las **submuestras bioquímicas de laboratorio de la ENFR** (fase 2, Cuadros 7.9 a 7.11) para cuantificar los casos reales no detectados.
+* **Conclusión metodológica del paper:** Con 24 provincias y subdiagnóstico, **no sirve forzar Machine Learning predictivo**. La respuesta honesta y rigurosa de la ciencia de datos en salud es construir **atlas geoespaciales descriptivos** y auditorías de datos para orientar operativos de testeo territorial en el terreno.
 
 ---
 
@@ -117,6 +122,7 @@ Para que no te queden dudas si te preguntan en la defensa del paper:
    * Argentina: **46,2%** promedio de las 24 provincias (**45,9%** total nacional ponderado).
 
 4. **Modelos predictivos en Argentina (Tabla 3):**
-   * Regresión OLS in-sample: $R^2 = 0,264$ (no significativo, $p = 0,31$).
-   * Validación cruzada OLS (LOOCV): $R^2 = -0,701$ (colapso predictivo).
-   * Random Forest Regressor (5-Fold CV): $R^2 = -0,802$ (colapso predictivo).
+   * **Estimador Naive Baseline:** $R^2 = 0,000$, $\text{MAE} = 1,59\%$ (prediciendo la media histórica provincial constante $\bar{y} = 13,0\%$).
+   * **Regresión OLS in-sample:** $R^2 = 0,264$ ($R^2_{\text{adj}} = 0,059$), $\text{MAE} = 1,44\%$ (no significativo, $F=1,29$, $p = 0,31$).
+   * **Validación cruzada OLS (LOOCV):** $R^2 = -0,701$, $\text{MAE} = 2,12\%$ (empeora un 70,1% frente al baseline ingenuo).
+   * **Random Forest Regressor (5-Fold CV):** $R^2 = -0,802$, $\text{MAE} = 2,20\%$ (pérdida de capacidad predictiva fuera de muestra).
