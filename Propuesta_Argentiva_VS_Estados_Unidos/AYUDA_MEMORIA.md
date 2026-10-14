@@ -126,3 +126,121 @@ Para que no te queden dudas si te preguntan en la defensa del paper:
    * **Regresión OLS in-sample:** $R^2 = 0,264$ ($R^2_{\text{adj}} = 0,059$), $\text{MAE} = 1,44\%$ (no significativo, $F=1,29$, $p = 0,31$).
    * **Validación cruzada OLS (LOOCV):** $R^2 = -0,701$, $\text{MAE} = 2,12\%$ (empeora un 70,1% frente al baseline ingenuo).
    * **Random Forest Regressor (5-Fold CV):** $R^2 = -0,802$, $\text{MAE} = 2,20\%$ (pérdida de capacidad predictiva fuera de muestra).
+
+---
+
+## 📐 6. Diccionario de Fórmulas, Símbolos Matemáticos y Conceptos de Machine Learning
+
+Si en la defensa del congreso o en una clase te preguntan qué significa cada letra, símbolo o término estadístico, acá tenés la traducción exacta a lenguaje simple:
+
+### 🔤 A. Símbolos y Letras Estadísticas
+
+| Símbolo / Letra | Nombre Formal | ¿Qué significa en lenguaje sencillo y cómo se interpreta? |
+| :---: | :--- | :--- |
+| **$r$** | **Coeficiente de Correlación de Pearson** | Mide qué tan asociadas van dos variables en línea recta. Varía siempre entre **$-1$ y $+1$**:<br>• **$r > 0$ (Positivo):** Si una sube, la otra también sube (ej. en EE.UU. a más pobreza, más diabetes: $r = +0,81$).<br>• **$r < 0$ (Negativo o Inverso):** Si una sube, la otra baja (ej. en Argentina a más pobreza NBI, menos controles de glucemia: $r = -0,74$).<br>• **$r \approx 0$ (Nulo):** No hay relación en línea recta (ej. en Argentina pobreza vs diabetes da $r = -0,05$). |
+| **$R^2$** | **Coeficiente de Determinación** | Mide qué porcentaje de la variación de la diabetes logra explicar el modelo predictivo:<br>• En entrenamiento va de $0$ a $1$ (o de $0\%$ a $100\%$). Ej: en EE.UU. $R^2 = 0,891$ significa que el modelo explica el $89,1\%$ de las diferencias entre estados.<br>• **¿Por qué puede dar negativo en validación cruzada ($R^2 < 0$)?** Porque la fórmula matemática es $R^2 = 1 - \frac{\text{Error del Modelo}}{\text{Error de la Media}}$. Si el modelo fuera de muestra comete más error que simplemente predecir el promedio provincial, la fracción es mayor a $1$ y la resta da negativa (en Argentina da $-0,701$). |
+| **$R^2_{\text{adj}}$** | **$R^2$ Ajustado** | Es el $R^2$ corregido por la cantidad de variables. Penaliza si agregás muchas variables explicativas que no aportan información real. |
+| **$\beta$ (Beta)** | **Coeficiente de Regresión (Pendiente)** | En la ecuación de la recta ($y = \beta_0 + \beta_1 x_1 + \dots$), indica **cuántos puntos porcentuales sube o baja la diabetes por cada $1\%$ que sube esa variable**. Ej: en EE.UU., el $\beta$ de la obesidad es $+0,180$; significa que por cada $1\%$ más de obesidad en un estado, la diabetes sube $+0,180\%$. |
+| **$p$ o $p\text{-value}$** | **Valor de Significancia Estadística** | Mide la probabilidad de que el resultado sea pura casualidad o suerte del azar:<br>• Si **$p < 0,05$**: Se considera **estadísticamente significativo** (hay menos del 5% de chance de que sea azar; la relación es real).<br>• Si **$p < 0,001$**: Altamente significativo y muy confiable (ej. en EE.UU. la pobreza y la obesidad tienen $p < 0,001$).<br>• Si **$p > 0,05$**: No es significativo (no se puede descartar el azar; en Argentina la pobreza tiene $p = 0,89$). |
+| **$\text{MAE}$** | **Error Absoluto Medio (*Mean Absolute Error*)** | Es el promedio de los errores en las mismas unidades de la variable (% de diabetes). Te dice en promedio cuántos puntos le erra el modelo al predecir una provincia. Ej: en EE.UU. $\text{MAE} = 0,50\%$ (le erra por medio punto); en Argentina $\text{MAE} = 2,12\%$ (le erra por más de 2 puntos). |
+| **$\text{MSE}$** | **Error Cuadrático Medio (*Mean Squared Error*)** | Es el promedio de los errores elevados al cuadrado ($\text{error}^2$). Se eleva al cuadrado para penalizar con mucha más fuerza los errores grandes y evitar que los errores positivos y negativos se cancelen. |
+| **$\bar{y}$ (y con barra)** | **Media o Promedio Aritmético** | El valor promedio de la variable que queremos predecir. En Argentina la media provincial es $\bar{y} = 13,0\%$; en EE.UU. es $\bar{y} = 10,2\%$. |
+| **$\text{Var}(y)$ y $\sigma$** | **Varianza y Desvío Estándar** | Miden qué tan desparramados o dispersos están los datos reales alrededor del promedio. En Argentina $\sigma = 2,1\%$ (o $2,3\%$), lo que da una varianza de $\text{Var}(y) = 4,24$. |
+| **$\text{VIF}$** | **Factor de Inflación de Varianza (*Variance Inflation Factor*)** | Mide la **multicolinealidad** (si dos variables predictoras dicen exactamente lo mismo y se estorban entre sí). Si $\text{VIF} < 5$, el modelo está sano y no hay redundancia nociva. En nuestro paper todos los VIF dieron entre 1,5 y 4,4 (controlados). |
+| **$\text{HC3}$** | **Errores Estándar Robustos (MacKinnon-White)** | Es un método matemático que corrige la heterocedasticidad (evita que provincias con mucha población como Buenos Aires distorsionen el cálculo del error respecto a provincias chicas como Tierra del Fuego). Hace que los $p$-values sean 100% confiables. |
+
+---
+
+### 🤖 B. Conceptos de Machine Learning y Modelado
+
+* **OLS (*Ordinary Least Squares* o Mínimos Cuadrados Ordinarios):** Es el método clásico de regresión lineal. Busca la mejor línea recta matemática que minimice la distancia vertical a todos los puntos observados.
+* **Random Forest Regressor:** Algoritmo no lineal de Machine Learning que combina cientos de "árboles de decisión" entrenados en paralelo y promedia sus pronósticos. Es muy potente porque detecta curvas e interacciones complejas.
+* **Validación Cruzada (*Cross-Validation*):** Técnica fundamental para evaluar si un modelo realmente sabe predecir o si solo se memorizó los datos de memoria. Consiste en esconder una parte de las provincias (datos de prueba), entrenar el modelo con las que quedan, y obligarlo a predecir la parte escondida.
+  * **K-Fold ($k=5$):** Se usa en EE.UU. Divide los 51 estados en 5 grupitos de ~10 estados. Entrena con 4 grupitos y evalúa en el 5º, repitiendo 5 veces.
+  * **LOOCV (*Leave-One-Out Cross-Validation*):** Se usa en Argentina porque son 24 provincias. Esconde 1 provincia, entrena con las otras 23, predice la escondida, y repite el proceso 24 veces (una vez por cada provincia).
+* **Estimador Naive Baseline (Modelo Ingenuo de Referencia):** Es el punto de partida de cualquier evaluación seria en ciencia de datos. Consiste en preguntarse: *¿Qué pasa si no uso ninguna variable compleja y simplemente le asigno a todas las provincias el promedio histórico $\bar{y} = 13,0\%$?* Si un algoritmo de Machine Learning sofisticado comete más error que este estimador tonto, significa que el algoritmo fracasó.
+* **Data Leakage (Filtración de Información):** Ocurre cuando el algoritmo "hace trampa" y ve información del conjunto de prueba durante el entrenamiento. En nuestro pipeline se evitó al 100% porque cada provincia de prueba estuvo estrictamente aislada del entrenamiento.
+
+---
+
+### ⚙️ C. ¿Cómo funciona el Pipeline de Python (`pipeline_comparativa_argentina_usa.py`)?
+El script de Python es el corazón del trabajo. Hace automáticamente 4 pasos secuenciales sin que tengas que tocar nada a mano:
+1. **Paso 1 (Carga):** Lee los archivos CSV de `Datos/enfr2018_provincias.csv` y `Datos/brfss2015_estados.csv` y junta los datos con los mapas vectoriales GeoJSON.
+2. **Paso 2 (Cálculo):** Aplica las fórmulas de Pearson ($r$), ajusta las regresiones OLS con corrección HC3, calcula los VIF, corre las validaciones cruzadas (LOOCV y 5-Fold), evalúa el Random Forest y genera las 4 tablas oficiales en formato CSV dentro de `Resultados/`.
+3. **Paso 3 (Graficación):** Dibuja y exporta las 5 figuras científicas en alta definición (220 DPI) listas para imprenta.
+4. **Paso 4 (Compilación Word):** Abre la plantilla oficial de dos columnas del congreso CIITI/CoNaIISI, escribe los textos académicos estructurados, incrusta las figuras y las tablas, formatea las referencias bibliográficas y guarda el archivo final [Paper_Comparativo_Argentina_USA_2026.docx](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Paper/Paper_Comparativo_Argentina_USA_2026.docx).
+
+---
+
+## 📖 7. Explicación Detallada del Paper Sección por Sección y de Cada Gráfico
+
+Acá tenés el resumen narrativo del paper para entender la historia completa de la investigación:
+
+### 🔹 Sección 1: Introducción y Motivación
+* **¿Qué plantea?** La diabetes tipo 2 es una epidemia mundial. En países desarrollados como EE.UU. hay muchísimos modelos de inteligencia artificial y predicción territorial. Pero nos preguntamos: **¿esos modelos de ciencia de datos sirven y se pueden aplicar directamente en Argentina o en América Latina?**
+* **La respuesta preliminar:** No, porque los sistemas de salud son opuestos: EE.UU. tiene un sistema privado donde el acceso a remedios depende de la billetera; Argentina tiene un sistema público universal gratuito que regala medicamentos (Remediar) pero tiene distancias enormes y demoras en el diagnóstico.
+
+### 🔹 Sección 2: Marco Conceptual y Antecedentes
+* Se apoya en el modelo de **Determinantes Sociales de la Salud (DSS)** de la OMS: la diabetes no es solo genética; depende de si podés comprar comida sana, si tenés tiempo de hacer ejercicio y si tenés un hospital cerca.
+* En EE.UU. existe el famoso *"Cinturón de la Diabetes"* en el sur pobre. En Argentina hay antecedentes de desigualdad regional en el norte, pero muy pocos atlas geoespaciales comparativos.
+* Introduce el aviso metodológico sobre el **Problema de la Unidad de Área Modificable (MAUP)** y la **Falacia Ecológica**: cuando mirás datos por provincia (macro), estás viendo propiedades del sistema territorial y no el comportamiento individual de cada persona.
+
+### 🔹 Sección 3: Fuentes de Datos y Metodología
+* **Estados Unidos:** Relevamiento CDC BRFSS 2015 con 441.456 personas encuestadas representativas de los 51 estados.
+* **Argentina:** 4ª Encuesta Nacional de Factores de Riesgo (ENFR 2018) del INDEC y Ministerio de Salud (24 provincias), cruzada con el Censo 2010 (NBI), Censo 2022 (cobertura médica pública) y EPH 2018 (pobreza monetaria).
+* **Punto clave:** Ambas encuestas miden la prevalencia mediante **autorreporte estandarizado** de diagnóstico médico previo.
+
+---
+
+### 🗺️ Sección 4.1 y FIGURA 1: Atlas Geoespacial de Prevalencia
+* **¿Qué muestra la Figura 1?** Dos mapas puestos uno al lado del otro con la **misma escala de colores (del 6% al 18%)** para que sean visualmente comparables:
+  * **Figura 1a (EE.UU.):** Se ve claramente una franja roja oscura en el sur profundo (Misisipi 14,8%, Virginia Occidental 14,5%, Alabama 13,6%). Los estados ricos del oeste y norte son claritos (Colorado 6,8%, Utah 7,1%). Hay un contraste geográfico nítido.
+  * **Figura 1b (Argentina):** La distribución sorprende. Las tasas más altas no están en el norte pobre, sino en Cuyo y el Centro (San Luis 17,3%, San Juan 15,9%, La Rioja 15,1%). CABA tiene el valor más bajo (8,8%), pero comparte valores llamativamente bajos con provincias muy postergadas del norte como Jujuy (8,9%) y Chaco (10,3%).
+
+---
+
+### 🏃‍♂️ Sección 4.2 y FIGURA 2: Factores de Riesgo (Obesidad y Sedentarismo)
+* **¿Qué muestra la Figura 2?** Cuatro mapas que comparan obesidad y sedentarismo en ambos países:
+  * **Figura 2a y 2c (EE.UU.):** La obesidad (media 29,3%) y el sedentarismo (media 25,8%) se concentran exactamente en los mismos estados del sur que tienen más diabetes. Van en sintonía perfecta.
+  * **Figura 2b y 2d (Argentina):** La obesidad promedia 26,7% (con picos en San Juan 34,4% y Santa Cruz 34,0%). Pero el sedentarismo es escandaloso: promedia **46,2%** a nivel provincial (casi el doble que en EE.UU.), llegando al 69,1% en Formosa y 61,2% en La Rioja. El sedentarismo en Argentina es un problema generalizado en casi todo el país.
+
+---
+
+### 🔥 Sección 4.3 y FIGURA 3 / TABLA 2: Matriz de Correlaciones y Regresión OLS
+* **¿Qué muestra la Figura 3?** Dos matrices de calor de correlaciones ($r$ de Pearson):
+  * En EE.UU. casi todos los casilleros de factores de riesgo con diabetes son rojos intensos: pobreza de ingresos ($r = +0,81$), sedentarismo ($r = +0,79$), bajo nivel educativo ($r = +0,77$) y obesidad ($r = +0,75$). Todos con $p < 0,001$. En la Tabla 2, la regresión lineal logra un ajuste excelente de $R^2 = 0,891$.
+  * En Argentina la matriz muestra casilleros azulados o casi blancos: la pobreza monetaria no se asocia con diabetes ($r = -0,05$), el NBI da correlación negativa ($r = -0,26$) y la falta de obra social da $r = -0,16$. En la Tabla 2, el modelo OLS no es significativo ($p = 0,31$, $R^2 = 0,264$).
+
+---
+
+### 💊 Sección 4.4 y FIGURA 4 / FIGURA 5b: La Paradoja de Detección vs. Tratamiento
+Acá está la explicación de por qué los datos argentinos se comportan de forma tan rara. Se explica en dos etapas:
+1. **Etapa 1: Detección Temprana (Screening) y Subdiagnóstico (Figura 5b):**
+   * Para saber si tenés diabetes, te tenés que hacer un análisis de sangre. En EE.UU. más del 85% de la gente se hace chequeos de rutina.
+   * En Argentina descubrimos una correlación negativa fuertísima: **$r = -0,74$ entre pobreza estructural (NBI) y haberse medido la glucosa alguna vez**. En CABA el 92,9% se testeó, pero en Chaco, Formosa y Santiago del Estero el **40% de la población adulta jamás se midió la glucemia en su vida**.
+   * Si 4 de cada 10 personas nunca se hicieron el análisis, no saben que están enfermas. Al encuestarlas responden "no tengo diabetes", lo que hace bajar artificialmente la tasa declarada en el norte.
+2. **Etapa 2: Cobertura Farmacológica en Tratamiento (Figura 4a y 4b):**
+   * En EE.UU. (Figura 4b), la pesquisa diagnóstica es alta, pero el remedio es caro (la insulina ha llegado a costar más de USD 300 mensuales, provocando que la gente racione sus dosis por falta de plata).
+   * En Argentina (Figura 4a), una vez que el paciente fue diagnosticado, el hospital público y el **Programa Remediar** le entregan la metformina y la insulina gratis por ley (Ley 26.914). Por eso, provincias muy humildes donde más del 50% de la gente no tiene obra social alcanzan coberturas de tratamiento superiores al 60% (Formosa 62,6%, Santa Cruz 70,0%, Chaco 54,2%).
+
+---
+
+### 📉 Sección 4.5 y FIGURA 5a / TABLA 3: Límites de Predictibilidad y Machine Learning
+* **¿Qué demuestra la Tabla 3?**
+  * En EE.UU. ($N=51$), como hay un gradiente lineal claro, Random Forest predice con gran solidez ($R^2_{\text{CV}} = 0,802$, error de apenas $0,66\%$).
+  * En Argentina ($N=24$), el modelo lineal OLS en muestra parece ajustar ($R^2 = 0,264$), pero cuando lo obligás a predecir provincias que no vio mediante validación cruzada (LOOCV), el modelo se destruye: $R^2_{\text{LOOCV}} = -0,701$ y Random Forest da $R^2 = -0,802$.
+  * **Demostración clave:** El predictor de la media (Naive Baseline) tiene un error de $\text{MAE} = 1,59\%$. El modelo de regresión OLS tiene un error peor de $\text{MAE} = 2,12\%$.
+* **Conclusión:** Las variables socioeconómicas provinciales no sirven para predecir diabetes en Argentina con Machine Learning porque los datos observados están distorsionados por el subdiagnóstico.
+
+---
+
+### 🏛️ Sección 5: Discusión y Políticas Públicas
+* **Para EE.UU.:** La prioridad sanitaria no es salir a buscar enfermos, sino regular el mercado farmacéutico y poner topes de precio a la insulina para que la gente no se muera por no poder pagar el copago.
+* **Para Argentina:** La prioridad no es regalar más medicamentos en los grandes hospitales, sino salir a buscar a la gente en operativos territoriales barriales y parajes rurales con tiras reactivas de glucosa para diagnosticar a ese 40% que no sabe que tiene diabetes.
+* **Advertencia epistemológica contra el "solucionismo predictivo":** No hay que tirar algoritmos complejos de Machine Learning sobre datos agregados chicos ($N=24$) esperando que hagan magia. Cuando hay problemas de subregistro, la máquina confunde la falta de diagnóstico con falta de enfermedad.
+
+---
+
+### 🎯 Sección 6: Conclusiones y Trabajos Futuros
+* Se demostró el valor del **Atlas Geoespacial Descriptivo** por sobre los modelos predictivos frágiles.
+* **Línea futura fundamental:** Analizar las submuestras con mediciones bioquímicas de laboratorio de la ENFR (Cuadros 7.9 a 7.11) para cuantificar por primera vez en números reales cuánta diabetes oculta hay en cada región del país.
