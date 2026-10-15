@@ -104,6 +104,34 @@ La idea más potente y valiosa del trabajo es que **la relación entre pobreza y
 
 ---
 
+### 🔄 C. Tabla de Equivalencias Directas: ¿Qué columna de Argentina equivale a cuál de EE.UU.?
+
+Esta tabla es fundamental para responder en la defensa o exposición: **¿qué columna usamos en Argentina y cuál es exactamente su contraparte en Estados Unidos?**
+
+| Dimensión / Variable | Columna en Argentina 🇦🇷 (`enfr2018_provincias.csv`) | Columna en EE.UU. 🇺🇸 (`brfss2015_estados.csv`) | ¿Por qué son equivalentes y cómo se interpretan? | Rol en los Modelos / Figuras |
+| :--- | :--- | :--- | :--- | :--- |
+| **Enfermedad (Outcome Principal)** | `tasa_diabetes_pct` | `tasa_diabetes_pct` | **Equivalencia directa 1:1:** Ambas miden el porcentaje de adultos con diagnóstico previo de diabetes otorgado por personal de salud (autorreporte estandarizado en ambas encuestas). | Variable dependiente ($y$) en todos los modelos OLS, Random Forest y en la **Figura 1**. |
+| **Nutrición y Obesidad** | `obesidad_pct` | `obesidad_pct` | **Equivalencia directa 1:1:** Ambas miden el porcentaje de adultos con Índice de Masa Corporal $\text{IMC} \ge 30\text{ kg/m}^2$, calculado a partir de peso y talla declarados. | Predictor central en OLS, correlaciones y en la **Figura 2 (a y b)**. |
+| **Estilo de Vida (Sedentarismo)** | `inactividad_fisica_pct` | `inactividad_fisica_pct` | **Equivalencia conceptual directa:** Ambas miden inactividad física en tiempo libre / nivel bajo de actividad física habitual en el último mes. | Predictor central en OLS, correlaciones y en la **Figura 2 (c y d)**. |
+| **Pobreza e Ingresos (Económico)** | `pobreza_personas_pct` *(y también `nbi_2010_pct`)* | `pobreza_ingresos_pct` | **Equivalencia de privación socioeconómica:**<br>• En EE.UU.: Hogares con ingresos anuales menores a USD 25.000 (`INCOME2`).<br>• En Argentina: Personas bajo la línea de pobreza monetaria (EPH 2018) y porcentaje de hogares con NBI (Censo 2010). | Predictor clave en OLS y correlaciones (**Figura 3**). Muestra el gran desacople: $r = +0,81$ en EE.UU. vs. $r = -0,05$ en Argentina. |
+| **Falta de Seguro Médico (Salud)** | `sin_cobertura_salud_pct` | `sin_cobertura_salud_pct` | **Equivalencia de vulnerabilidad en cobertura:**<br>• En EE.UU.: Adultos de 18 a 64 años sin seguro de salud formal ni plan médico (`_HCVU651`).<br>• En Argentina: Personas que dependen exclusivamente del hospital público, sin obra social ni prepaga (Censo 2022). | Variable de sistema sanitario en modelos OLS y análisis de equidad (**Figura 4**). |
+| **Unidad Territorial Subnacional** | `provincia` (24 jurisdicciones) | `estado` (51 entidades) | Representa la unidad político-administrativa de análisis territorial (23 provincias + CABA vs. 50 estados + Washington D.C.). | Clave primaria para unir los datos con las capas cartográficas GeoJSON. |
+| **Acceso al Diagnóstico (Screening)** | `medicion_glucemia_pct` | Detección clínica rutinaria (>85% en CDC BRFSS) | **Clave de la paradoja:** En Argentina mide quiénes se hicieron análisis de sangre alguna vez. En provincias pobres cae al 60% (subdiagnóstico). En EE.UU. el testeo de rutina supera el 85% en casi todos los estados. | Explica la paradoja en la **Figura 5b**: a mayor pobreza NBI en Argentina, menos controles ($r = -0,74$). |
+| **Tratamiento vs. Barrera Económica** | `tratamiento_diabetes_pct` | `barrera_costo_medico_pct` | **Contraste de modelos sanitarios:**<br>• En Argentina: % de diagnosticados con fármacos activos (gratis por Programa Remediar y Ley 26.914).<br>• En EE.UU.: % de personas que no pudieron ir al médico o costear el tratamiento por falta de dinero. | Evidencia central de la **Figura 4** (brecha de acceso y protección pública). |
+| **Distribución Espacial / Ruralidad** | `densidad_hab_km2` y `log_densidad` | `indice_ruralidad` | **Equivalencia demográfica de urbanización:**<br>• En Argentina: Densidad de población continental (linealizada con logaritmo base 10).<br>• En EE.UU.: Proporción de población residente en condados rurales según códigos oficiales USDA/ERS. | Control de concentración territorial en regresiones OLS y en modelos espaciales. |
+| **Nivel Educativo** | Capturado estructuralmente en `nbi_2010_pct` | `secundario_incompleto_pct` | En EE.UU. mide adultos sin escuela secundaria (*High School*). En Argentina, el déficit educativo está integrado en el indicador multidimensional censal de NBI. | Factor sociodemográfico de vulnerabilidad en regresiones OLS de EE.UU. |
+
+#### 💡 Variables adicionales exclusivas del dataset argentino (`enfr2018_provincias.csv`)
+Si te preguntan por columnas que están en el archivo de Argentina pero no tienen contraparte directa en la tabla de EE.UU., son variables clínicas complementarias de la ENFR 2018:
+* `cv_diabetes_pct`: Coeficiente de variación muestral (demuestra que todas las estimaciones provinciales son confiables, CV < 12,5%).
+* `presion_elevada_pct`: Prevalencia de hipertensión arterial autorreportada.
+* `colesterol_elevado_pct`: Prevalencia de colesterol alto autorreportado.
+* `tabaquismo_pct`: Consumo habitual de tabaco.
+* `consumo_frutas_verduras_pct`: Alimentación saludable (consumo de al menos 5 porciones diarias de frutas y verduras).
+* `region`: Agrupación estadística regional oficial del INDEC (Pampeana y GBA, Cuyo, NOA, NEA, Patagonia).
+
+---
+
 ## 🔢 5. Recordatorio Rápido sobre los Números Unificados
 
 Para que no te queden dudas si te preguntan en la defensa del paper:
@@ -244,3 +272,32 @@ Acá está la explicación de por qué los datos argentinos se comportan de form
 ### 🎯 Sección 6: Conclusiones y Trabajos Futuros
 * Se demostró el valor del **Atlas Geoespacial Descriptivo** por sobre los modelos predictivos frágiles.
 * **Línea futura fundamental:** Analizar las submuestras con mediciones bioquímicas de laboratorio de la ENFR (Cuadros 7.9 a 7.11) para cuantificar por primera vez en números reales cuánta diabetes oculta hay en cada región del país.
+
+---
+
+## 📋 8. TABLA FINAL: EQUIVALENCIAS DIRECTAS DE COLUMNAS (ARGENTINA 🇦🇷 VS. ESTADOS UNIDOS 🇺🇸)
+
+> **¿Qué columna usamos en Argentina y cuál es exactamente su equivalente en Estados Unidos?**  
+> Si te preguntan en la defensa cómo se corresponden los datos entre ambos países, acá tenés el mapeo directo columna por columna:
+
+| Dimensión / Variable | Columna en Argentina 🇦🇷<br>(`Datos/enfr2018_provincias.csv`) | Columna en EE.UU. 🇺🇸<br>(`Datos/brfss2015_estados.csv`) | ¿Por qué son equivalentes y qué miden? | Rol en los Modelos / Figuras |
+| :--- | :--- | :--- | :--- | :--- |
+| **Enfermedad (Outcome / Variable Objetivo $y$)** | `tasa_diabetes_pct` | `tasa_diabetes_pct` | **Equivalencia directa 1 a 1:** % de adultos con diagnóstico de diabetes otorgado por personal de salud (autorreporte oficial estandarizado en ambas encuestas). | Variable dependiente ($y$) en todos los modelos OLS, Random Forest y en la **Figura 1**. |
+| **Nutrición y Obesidad** | `obesidad_pct` | `obesidad_pct` | **Equivalencia directa 1 a 1:** % de adultos con Índice de Masa Corporal $\text{IMC} \ge 30\text{ kg/m}^2$, calculado a partir de peso y talla declarados. | Predictor central en OLS, correlaciones y en la **Figura 2 (a y b)**. |
+| **Estilo de Vida (Sedentarismo)** | `inactividad_fisica_pct` | `inactividad_fisica_pct` | **Equivalencia conceptual directa:** Ambas miden inactividad física en tiempo libre / nivel bajo de actividad física habitual en el último mes. | Predictor central en OLS, correlaciones y en la **Figura 2 (c y d)**. |
+| **Pobreza e Ingresos (Económico)** | `pobreza_personas_pct`<br>*(y `nbi_2010_pct`)* | `pobreza_ingresos_pct` | **Equivalencia de privación socioeconómica:**<br>• En EE.UU.: Hogares con ingresos anuales menores a USD 25.000 (`INCOME2`).<br>• En Argentina: Personas bajo la línea de pobreza monetaria (EPH 2018) y porcentaje de hogares con NBI (Censo 2010). | Predictor clave en OLS y correlaciones (**Figura 3**). Muestra el gran desacople: $r = +0,81$ en EE.UU. vs. $r = -0,05$ en Argentina. |
+| **Falta de Cobertura Médica** | `sin_cobertura_salud_pct` | `sin_cobertura_salud_pct` | **Equivalencia de vulnerabilidad en cobertura:**<br>• En EE.UU.: Adultos de 18 a 64 años sin seguro de salud formal ni plan médico (`_HCVU651`).<br>• En Argentina: Personas que dependen exclusivamente del hospital público, sin obra social ni prepaga (Censo 2022). | Variable de sistema sanitario en modelos OLS y análisis de equidad (**Figura 4**). |
+| **Unidad Territorial Subnacional** | `provincia`<br>(24 jurisdicciones: 23 provs + CABA) | `estado`<br>(51 entidades: 50 estados + D.C.) | Representa la unidad político-administrativa de análisis territorial. En EE.UU. incluye además el código federal `fips`. | Clave primaria para unir los datos con las capas cartográficas GeoJSON. |
+| **Acceso al Diagnóstico (Screening)** | `medicion_glucemia_pct` | Detección clínica rutinaria<br>(>85% en CDC BRFSS) | **Clave de la paradoja:** En Argentina mide quiénes se hicieron análisis de sangre alguna vez. En provincias pobres cae al 60% (subdiagnóstico). En EE.UU. el testeo de rutina supera el 85% en casi todos los estados. | Explica la paradoja en la **Figura 5b**: a mayor pobreza NBI en Argentina, menos controles ($r = -0,74$). |
+| **Tratamiento vs. Barrera Económica** | `tratamiento_diabetes_pct` | `barrera_costo_medico_pct` | **Contraste de modelos sanitarios:**<br>• En Argentina: % de diagnosticados con fármacos activos (gratis por Programa Remediar y Ley 26.914).<br>• En EE.UU.: % de personas que no pudieron ir al médico o costear el tratamiento por falta de dinero. | Evidencia central de la **Figura 4** (brecha de acceso y protección pública). |
+| **Urbanización / Ruralidad** | `densidad_hab_km2`<br>y `log_densidad` | `indice_ruralidad` | **Equivalencia demográfica de distribución espacial:**<br>• En Argentina: Densidad de población continental (linealizada con logaritmo base 10).<br>• En EE.UU.: Proporción de población residente en condados rurales según códigos oficiales USDA/ERS. | Control de concentración territorial en regresiones OLS y en modelos espaciales. |
+| **Nivel Educativo** | Integrado estructuralmente en `nbi_2010_pct` | `secundario_incompleto_pct` | En EE.UU. mide adultos sin escuela secundaria (*High School*). En Argentina, el déficit educativo está integrado en el indicador multidimensional censal de NBI. | Factor sociodemográfico de vulnerabilidad en regresiones OLS de EE.UU. |
+
+### 💡 Columnas adicionales exclusivas de Argentina (`enfr2018_provincias.csv`)
+Si te preguntan por columnas que están en el archivo argentino y no en el de EE.UU., son variables clínicas complementarias de la ENFR 2018:
+* `cv_diabetes_pct`: Coeficiente de variación muestral (demuestra que todas las estimaciones provinciales son confiables, CV < 12,5%).
+* `presion_elevada_pct`: Prevalencia de hipertensión arterial autorreportada.
+* `colesterol_elevado_pct`: Prevalencia de colesterol alto autorreportado.
+* `tabaquismo_pct`: Consumo habitual de tabaco.
+* `consumo_frutas_verduras_pct`: Alimentación saludable (consumo de al menos 5 porciones diarias de frutas y verduras).
+* `region`: Agrupación estadística regional oficial del INDEC (Pampeana y GBA, Cuyo, NOA, NEA, Patagonia).
