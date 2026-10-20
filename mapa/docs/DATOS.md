@@ -66,9 +66,9 @@ IGN con `mapa geo build` (ver `mapa/data/geo/README.md`). Pasa los controles de 
 (capitales dentro de su provincia, sin solapes, CABA del tamaño correcto) y `/v1/locate` ya
 resuelve bien esos casos.
 
-**Pendiente de decisión del equipo:** cómo representar el sector antártico y las islas del
-Atlántico Sur de Tierra del Fuego (la capa sólo dibuja el sector insular austral; detalle y
-consideración de la Ley 26.651 en `mapa/data/geo/README.md`).
+**Decidido por el equipo:** se muestra todo el territorio oficial de Tierra del Fuego, Antártida e Islas
+del Atlántico Sur, aunque no tenga datos: las Malvinas en su lugar y la Antártida con las islas australes
+en un recuadro, todo en gris «sin datos» (ver `mapa/data/geo/README.md`).
 
 **No se tocó** el archivo viejo: lo usan el paper y el Motor anterior, cuyos mapas siguen
 teniendo el defecto.

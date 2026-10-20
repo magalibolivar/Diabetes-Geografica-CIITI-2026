@@ -177,9 +177,18 @@
 			proyección cónica de áreas iguales.
 		</p>
 		<p>
-			La provincia de Tierra del Fuego incluye también la Antártida Argentina y las islas del Atlántico Sur;
-			en este mapa se dibuja solo su sector insular austral para poder mostrar el país en una vista. El
-			<strong>mosaico</strong> es otra forma de ver lo mismo: cada provincia ocupa un cuadrado igual, así
+			La provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur incluye, además de la Isla
+			Grande, las <strong>Islas Malvinas</strong>, la <strong>Antártida Argentina</strong> y las islas
+			australes (Georgias del Sur, Sandwich del Sur y Orcadas del Sur). Se dibujan como en el mapa oficial
+			del IGN: las Malvinas en su lugar y la Antártida con las islas australes en un recuadro aparte.
+		</p>
+		<p>
+			Esos territorios <strong>no tienen datos</strong>: la encuesta no los releva, por eso se ven en gris. Los
+			datos de la provincia describen solo sus localidades urbanas de la Isla Grande. Al tocar cualquiera de
+			ellos se abre la ficha de la provincia.
+		</p>
+		<p>
+			El <strong>mosaico</strong> es otra forma de ver lo mismo: cada provincia ocupa un cuadrado igual, así
 			ninguna pesa más por su superficie.
 		</p>
 	</section>

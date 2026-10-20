@@ -6,8 +6,9 @@
 	let {
 		scale,
 		indicator,
-		showHatch = false
-	}: { scale: Scale; indicator: Indicator; showHatch?: boolean } = $props();
+		showHatch = false,
+		showNoData = false
+	}: { scale: Scale; indicator: Indicator; showHatch?: boolean; showNoData?: boolean } = $props();
 </script>
 
 <div class="legend">
@@ -29,10 +30,15 @@
 			</li>
 		{/each}
 	</ul>
-	{#if showHatch}
+	{#if showHatch || showNoData}
 		<div class="keys">
-			<span class="flag">Poco confiable según el INDEC</span>
-			<span class="flag caution">Con precaución</span>
+			{#if showHatch}
+				<span class="flag">Poco confiable según el INDEC</span>
+				<span class="flag caution">Con precaución</span>
+			{/if}
+			{#if showNoData}
+				<span class="nodata">Sin datos (la encuesta no releva Malvinas, Antártida ni las islas australes)</span>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -66,6 +72,24 @@
 		font-size: 0.7rem;
 		line-height: 1.2;
 		color: var(--ink-2);
+	}
+	.nodata {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--ink-2);
+		line-height: 1.3;
+	}
+	.nodata::before {
+		content: '';
+		width: 14px;
+		height: 14px;
+		border-radius: 3px;
+		flex: none;
+		background: var(--nodata);
+		box-shadow: 0 0 0 1px var(--axis);
 	}
 	.keys {
 		display: flex;

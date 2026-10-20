@@ -10,7 +10,8 @@
 		selected = null,
 		onselect,
 		tip,
-		caption
+		caption,
+		showExtras = true
 	}: {
 		geometry: MapGeometry;
 		items: MapItem[];
@@ -19,6 +20,8 @@
 		onselect?: (slug: string) => void;
 		tip?: Snippet<[string]>;
 		caption: string;
+		/** Dibuja Malvinas y el recuadro de Antártida/islas australes (sin datos). */
+		showExtras?: boolean;
 	} = $props();
 
 	const PITCH = 84;
@@ -141,6 +144,35 @@
 			</g>
 		{/each}
 
+		{#if showExtras}
+			{#each geometry.extras as ex (ex.id)}
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<g
+					class="extra"
+					role="button"
+					tabindex="0"
+					aria-label={ex.aria}
+					onclick={() => onselect?.(ex.belongsTo)}
+					onkeydown={(e) => key(e, ex.belongsTo)}
+				>
+					<title>{ex.label}: sin datos en esta encuesta</title>
+					{#if ex.frame}
+						<rect class="frame" x={ex.frame.x} y={ex.frame.y} width={ex.frame.width} height={ex.frame.height} rx="8" />
+					{/if}
+					<path class="xpath" d={ex.path} />
+					<text
+						class="xlabel"
+						x={ex.labelAt[0]}
+						y={ex.labelAt[1] - (ex.frame ? 12 : 0)}
+						text-anchor={ex.frame ? 'middle' : 'start'}
+					>
+						<tspan>{ex.label}</tspan>
+						<tspan class="sub" x={ex.labelAt[0]} dy="12">sin datos</tspan>
+					</text>
+				</g>
+			{/each}
+		{/if}
+
 		{#if selected && geometry.paths[selected]}
 			{@const t = tilePos(selected)}
 			<path class="ring poly" d={geometry.paths[selected]} />
@@ -187,6 +219,46 @@
 			fill 0.5s var(--ease);
 	}
 	.over {
+		pointer-events: none;
+	}
+
+	/* Territorios sin datos propios (Malvinas, Antártida): se dibujan, pero en neutro. */
+	.extra {
+		cursor: pointer;
+		outline: none;
+		transition: opacity 0.55s var(--ease);
+	}
+	.xpath {
+		fill: var(--nodata);
+		stroke: var(--muted);
+		stroke-width: 0.5;
+		stroke-linejoin: round;
+	}
+	.frame {
+		fill: none;
+		stroke: var(--muted);
+		stroke-width: 0.8;
+	}
+	.xlabel {
+		font: 500 10.5px var(--font-ui);
+		fill: var(--ink-2);
+		pointer-events: none;
+	}
+	.xlabel .sub {
+		font-weight: 400;
+		fill: var(--muted);
+	}
+	.extra:hover .xpath,
+	.extra:focus-visible .xpath {
+		stroke: var(--ink);
+		stroke-width: 1.2;
+	}
+	.extra:focus-visible .frame {
+		stroke: var(--orange);
+		stroke-width: 2;
+	}
+	svg.tiles .extra {
+		opacity: 0;
 		pointer-events: none;
 	}
 	.marker circle:last-child {

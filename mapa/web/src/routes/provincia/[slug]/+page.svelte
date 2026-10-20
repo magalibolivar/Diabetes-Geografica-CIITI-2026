@@ -95,6 +95,7 @@
 					geometry={data.geometry}
 					{items}
 					onselect={(s) => goto(`/provincia/${s}`)}
+					showExtras={false}
 					caption="Mapa para ubicar {province.name}. Tocá otra provincia para ir a su ficha."
 				>
 					{#snippet tip(slug)}
@@ -104,6 +105,14 @@
 			</div>
 		</div>
 	</header>
+
+	{#if data.slug === 'tierra-del-fuego'}
+		<aside class="tdf card">
+			<strong>Sobre esta provincia.</strong> Tierra del Fuego, Antártida e Islas del Atlántico Sur también incluye
+			las Islas Malvinas, la Antártida Argentina y las islas australes. La encuesta no releva esos territorios:
+			los datos de esta ficha describen solo sus localidades urbanas de la Isla Grande.
+		</aside>
+	{/if}
 
 	{#if standouts.length}
 		<section class="stand" aria-labelledby="stand-h">
@@ -232,6 +241,16 @@
 	.mapbox {
 		max-width: 220px;
 		margin: 0 auto;
+	}
+	.tdf {
+		padding: 1rem 1.2rem;
+		margin-bottom: 2.5rem;
+		font-size: 0.92rem;
+		color: var(--ink-2);
+		max-width: 46rem;
+	}
+	.tdf strong {
+		color: var(--ink);
 	}
 	.stand {
 		margin-bottom: 4rem;

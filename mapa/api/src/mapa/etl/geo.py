@@ -11,7 +11,7 @@ class GeoError(ValueError):
     pass
 
 
-def _as_multipolygon(geom) -> MultiPolygon:
+def as_multipolygon(geom) -> MultiPolygon:
     if not geom.is_valid:
         geom = make_valid(geom)
     if isinstance(geom, Polygon):
@@ -39,7 +39,7 @@ def read_provinces(path: Path) -> dict[str, MultiPolygon]:
             raise GeoError(f"Provincia desconocida en el GeoJSON: {slug!r}")
         if slug in result:
             raise GeoError(f"Provincia duplicada en el GeoJSON: {slug!r}")
-        result[slug] = _as_multipolygon(shape(feature["geometry"]))
+        result[slug] = as_multipolygon(shape(feature["geometry"]))
 
     missing = valid - set(result)
     if missing:

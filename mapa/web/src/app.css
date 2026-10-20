@@ -55,7 +55,7 @@
 	--on-div-6: #0b0b0b;
 	--on-div-7: #ffffff;
 
-	--nodata: #e6e3da;
+	--nodata: #dcd8cc;
 	--hatch-ink: rgba(11, 11, 11, 0.72);
 
 	--font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
@@ -108,7 +108,7 @@
 		--on-div-5: #ffffff;
 		--on-div-6: #0b0b0b;
 		--on-div-7: #0b0b0b;
-		--nodata: #2c2c2a;
+		--nodata: #403f3b;
 		--hatch-ink: rgba(240, 239, 236, 0.8);
 	}
 }
@@ -152,7 +152,7 @@
 	--on-div-5: #ffffff;
 	--on-div-6: #0b0b0b;
 	--on-div-7: #0b0b0b;
-	--nodata: #2c2c2a;
+	--nodata: #403f3b;
 	--hatch-ink: rgba(240, 239, 236, 0.8);
 }
 

@@ -1,6 +1,6 @@
 # Capa de provincias
 
-`argentina_provincias.geojson` — 24 jurisdicciones, WGS84, ~480 KB, **generada** con
+`argentina_provincias.geojson` — 24 jurisdicciones, WGS84, ~540 KB, **generada** con
 `mapa geo build`. No editar a mano.
 
 - **Fuente:** Instituto Geográfico Nacional (IGN), capa `ign:provincia`, servicio WFS.
@@ -11,20 +11,31 @@
   y coordenadas a 4 decimales. Simplificar bordes compartidos una sola vez evita solapes y
   huecos entre provincias vecinas.
 - **Controles** (`mapa geo check`, `tests/test_geo_quality.py`): las 24 capitales caen en su
-  provincia, no hay solapes, CABA tiene el tamaño de CABA, el archivo pesa menos de 700 KB.
+  provincia, no hay solapes, la geometría es válida, CABA tiene el tamaño de CABA, el archivo pesa menos
+  de 700 KB y Tierra del Fuego conserva Malvinas, islas australes y sector antártico.
 
-## Decisión de cartografía: Tierra del Fuego
+## Tierra del Fuego, Antártida e Islas del Atlántico Sur
 
-La feature oficial de Tierra del Fuego incluye el **sector antártico y las islas del Atlántico
-Sur** (hasta 90°S), lo que arruina cualquier proyección web. Esta capa conserva solo el sector
-insular austral (Isla Grande, Isla de los Estados e islas menores) y lo declara en
-`metadata.modifications`.
+La feature oficial reúne territorios muy distintos y **se conserva completa** (decisión del equipo:
+mostrar todo, también lo que no tiene datos). Cada parte se simplifica según cómo se dibuja:
 
-Es una decisión de presentación, no una afirmación sobre el territorio. En Argentina, la Ley
-26.651 exige el mapa bicontinental oficial en ámbitos educativos y organismos públicos: si el
-sitio va a publicarse bajo la universidad conviene que el equipo decida cómo representar la
-Antártida y las islas (p. ej. un recuadro). Los datos originales siguen disponibles: basta
-re-ejecutar el build.
+| Parte | Cómo se dibuja en el sitio | Tolerancia |
+|---|---|---|
+| Isla Grande, de los Estados e islas menores | con las demás provincias, con los datos de la provincia | 0,004° (≈440 m) |
+| Islas Malvinas | en su lugar, al este de Santa Cruz, **sin datos** | 0,01° (≈1 km) |
+| Antártida Argentina, Georgias, Sandwich y Orcadas del Sur | en un recuadro polar, **sin datos** | 0,05° (≈5 km) |
+
+Se descartan islotes diminutos de las dos últimas. A 5 km de tolerancia, un punto de la costa antártica
+puede quedar fuera de la geometría (`/v1/locate`); no afecta a ningún caso de uso real.
+
+Los territorios sin datos llevan a la ficha de Tierra del Fuego al tocarlos, porque administrativamente
+son parte de esa provincia. Los datos de la encuesta describen solo sus localidades urbanas de la Isla Grande.
+
+## Validez de la geometría
+
+Simplificar partes por separado puede dejarlas superpuestas, y redondear coordenadas una por una puede
+volver a romper polígonos válidos. Por eso el build repara con `make_valid` y ajusta a la grilla con
+`set_precision` (que conserva la validez). Un test mira el archivo tal cual se publica.
 
 ## Regenerar
 

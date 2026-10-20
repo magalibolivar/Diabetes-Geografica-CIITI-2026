@@ -53,11 +53,26 @@ export interface Atlas {
 	values: Record<string, Record<string, Value>>;
 }
 
+/** Territorio que se dibuja pero no tiene datos propios (Malvinas, Antártida, islas australes). */
+export interface MapExtra {
+	id: string;
+	label: string;
+	/** Descripción accesible completa */
+	aria: string;
+	path: string;
+	labelAt: [number, number];
+	/** Recuadro (sólo el de Antártida e islas australes) */
+	frame?: { x: number; y: number; width: number; height: number };
+	/** Provincia a la que pertenece administrativamente: a dónde lleva el clic. */
+	belongsTo: string;
+}
+
 export interface MapGeometry {
 	width: number;
 	height: number;
 	paths: Record<string, string>;
 	centroids: Record<string, [number, number]>;
+	extras: MapExtra[];
 }
 
 /** Lo que el mapa necesita para dibujar una provincia (ya resuelto por la escala de color). */

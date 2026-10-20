@@ -167,7 +167,7 @@
 				</Map>
 			</div>
 			<div class="lg">
-				<Legend {scale} {indicator} showHatch={hasShaky} />
+				<Legend {scale} {indicator} showHatch={hasShaky} showNoData={current.mode === 'geo'} />
 			</div>
 		{/if}
 	</div>

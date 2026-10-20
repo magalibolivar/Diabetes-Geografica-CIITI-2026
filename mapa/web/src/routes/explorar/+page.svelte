@@ -101,10 +101,13 @@
 					</Map>
 				</div>
 				{#if mode === 'tiles'}
-					<p class="hint">Cada provincia ocupa el mismo lugar, sin importar su superficie.</p>
+					<p class="hint">
+						Cada provincia ocupa el mismo lugar, sin importar su superficie. Malvinas, Antártida e islas
+						australes (sin datos) forman parte de Tierra del Fuego y solo se ven en el mapa.
+					</p>
 				{/if}
 
-				<Legend {scale} {indicator} showHatch={hasShaky} />
+				<Legend {scale} {indicator} showHatch={hasShaky} showNoData={mode === 'geo'} />
 			</div>
 
 			{#if selectedProvince}

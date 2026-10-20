@@ -1,9 +1,10 @@
 import { error } from '@sveltejs/kit';
-import { geoConicEqualArea, geoPath } from 'd3-geo';
+import { geoAzimuthalEqualArea, geoConicEqualArea, geoPath } from 'd3-geo';
 import type { FeatureCollection, MultiPolygon } from 'geojson';
 import { apiGet, ApiError } from './api';
+import { splitTierraDelFuego } from '#lib/geometry';
 import { buildAtlas, type RawIndicator, type RawJurisdiction, type RawObservation } from '#lib/compose';
-import type { Atlas, MapGeometry } from '#lib/types';
+import type { Atlas, MapExtra, MapGeometry } from '#lib/types';
 
 export async function loadAtlas(): Promise<Atlas> {
 	try {
@@ -39,16 +40,33 @@ export function rewindForD3(polygons: Ring[][]): Ring[][] {
 const W = 600;
 const H = 940;
 const PAD = 12;
+/** Recuadro de Antártida e islas australes: el hueco libre a la derecha de la Patagonia. */
+const INSET = { x: 352, y: 690, width: 238, height: 240 };
 
-/** Provincias proyectadas a paths SVG (proyección cónica de áreas iguales, adecuada para Argentina). */
+const TDF = 'tierra-del-fuego';
+
+/**
+ * Provincias proyectadas a paths SVG (cónica de áreas iguales, adecuada para Argentina).
+ * Tierra del Fuego, Antártida e Islas del Atlántico Sur se reparte: el sector insular austral se dibuja con
+ * la provincia (y lleva sus datos), las Malvinas en su lugar sin datos, y la Antártida con las islas
+ * australes en un recuadro polar, también sin datos (la encuesta no releva esos territorios).
+ */
 export async function loadMapGeometry(): Promise<MapGeometry> {
 	const raw = await apiGet<FeatureCollection<MultiPolygon, { slug: string }>>('/v1/geo/provinces');
-	const fc: typeof raw = {
-		...raw,
-		features: raw.features.map((f) => ({
-			...f,
-			geometry: { ...f.geometry, coordinates: rewindForD3(f.geometry.coordinates) }
-		}))
+
+	const features = raw.features.map((f) => ({
+		...f,
+		geometry: { ...f.geometry, coordinates: rewindForD3(f.geometry.coordinates) }
+	}));
+	const tdf = features.find((f) => f.properties.slug === TDF);
+	if (!tdf) throw new Error('La API no devolvió Tierra del Fuego');
+	const parts = splitTierraDelFuego(tdf.geometry.coordinates);
+
+	const mainFc: FeatureCollection<MultiPolygon, { slug: string }> = {
+		type: 'FeatureCollection',
+		features: features.map((f) =>
+			f === tdf ? { ...f, geometry: { type: 'MultiPolygon', coordinates: parts.main } } : f
+		)
 	};
 	const projection = geoConicEqualArea()
 		.parallels([-30, -50])
@@ -58,16 +76,53 @@ export async function loadMapGeometry(): Promise<MapGeometry> {
 				[PAD, PAD],
 				[W - PAD, H - PAD]
 			],
-			fc
+			mainFc
 		);
 	const path = geoPath(projection).digits(1);
 
 	const paths: MapGeometry['paths'] = {};
 	const centroids: MapGeometry['centroids'] = {};
-	for (const f of fc.features) {
-		const slug = f.properties.slug;
-		paths[slug] = path(f) ?? '';
-		centroids[slug] = path.centroid(f) as [number, number];
+	for (const f of mainFc.features) {
+		paths[f.properties.slug] = path(f) ?? '';
+		centroids[f.properties.slug] = path.centroid(f) as [number, number];
 	}
-	return { width: W, height: H, paths, centroids };
+
+	const extras: MapExtra[] = [];
+	if (parts.malvinas.length) {
+		const geometry = { type: 'MultiPolygon' as const, coordinates: parts.malvinas };
+		const c = path.centroid(geometry) as [number, number];
+		extras.push({
+			id: 'malvinas',
+			label: 'Islas Malvinas',
+			aria: 'Islas Malvinas: territorio sin datos en esta encuesta. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
+			path: path(geometry) ?? '',
+			labelAt: [c[0] + 22, c[1] + 4],
+			belongsTo: TDF
+		});
+	}
+	if (parts.remote.length) {
+		const geometry = { type: 'MultiPolygon' as const, coordinates: parts.remote };
+		const polar = geoAzimuthalEqualArea()
+			// λ = 50°: el polo queda abajo y el sector argentino (meridiano 50°O) apunta hacia arriba.
+			.rotate([50, 90])
+			.fitExtent(
+				[
+					[INSET.x + 10, INSET.y + 10],
+					[INSET.x + INSET.width - 10, INSET.y + INSET.height - 34]
+				],
+				geometry
+			);
+		const polarPath = geoPath(polar).digits(1);
+		extras.push({
+			id: 'antartida',
+			label: 'Antártida e islas australes',
+			aria: 'Antártida Argentina e islas del Atlántico Sur (Georgias, Sandwich y Orcadas del Sur): territorio sin datos en esta encuesta. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
+			path: polarPath(geometry) ?? '',
+			labelAt: [INSET.x + INSET.width / 2, INSET.y + INSET.height - 12],
+			frame: INSET,
+			belongsTo: TDF
+		});
+	}
+
+	return { width: W, height: H, paths, centroids, extras };
 }

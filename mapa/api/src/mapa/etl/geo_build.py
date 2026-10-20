@@ -13,10 +13,11 @@ from datetime import date
 from pathlib import Path
 
 import shapely
-from shapely.geometry import MultiPolygon, shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.geometry.base import BaseGeometry
 
 from mapa import catalog
+from mapa.etl.geo import as_multipolygon
 
 IGN_WFS_URL = (
     "https://wms.ign.gob.ar/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature"
@@ -28,16 +29,23 @@ IGN_TDF_NAME = "Tierra del Fuego, Antártida e Islas del Atlántico Sur"
 DEFAULT_TOLERANCE = 0.004
 COORD_DECIMALS = 4  # ~11 m
 
-# La feature oficial de Tierra del Fuego incluye el sector antártico (hasta 90°S) y las islas
-# del Atlántico Sur, que rompen cualquier proyección web. Para el mapa se conserva el sector
-# insular austral (Isla Grande, Isla de los Estados e islas menores).
-TDF_MAX_LON = -62.0
-TDF_MIN_LAT = -56.5
+# La feature oficial de «Tierra del Fuego, Antártida e Islas del Atlántico Sur» reúne territorios muy
+# distintos. Se conservan TODOS (es la representación oficial) pero se simplifican según cómo se dibujan:
+#   - sector insular austral (Isla Grande, de los Estados…): junto al resto del país, tolerancia común;
+#   - Islas Malvinas: se dibujan a escala del mapa nacional, tolerancia fina;
+#   - Antártida e islas australes (Georgias, Sandwich, Orcadas…): van en un recuadro chico, tolerancia gruesa.
+TDF_MAIN_MAX_LON = -62.0
+TDF_MAIN_MIN_LAT = -56.5
+MALVINAS_BOX = (-62.0, -57.0, -53.5, -50.5)  # lon_min, lon_max, lat_min, lat_max
+MALVINAS_TOLERANCE = 0.01
+MALVINAS_MIN_AREA = 0.0005  # grados²: se descartan islotes menores (~5 km²)
+REMOTE_TOLERANCE = 0.05
+REMOTE_MIN_AREA = 0.003  # grados²
 
 MODIFICATIONS = [
-    "Tierra del Fuego: sólo se conservan los polígonos al oeste de 62°O y al norte de 56,5°S "
-    "(Isla Grande, Isla de los Estados e islas menores). La feature oficial también incluye el "
-    "sector antártico y las islas del Atlántico Sur, que no se dibujan en esta capa.",
+    "Tierra del Fuego, Antártida e Islas del Atlántico Sur: se conserva todo el territorio oficial. "
+    "Las partes que se dibujan chicas se simplifican más (Malvinas 0,01°; Antártida e islas australes 0,05°) "
+    "y se descartan islotes menores.",
 ]
 
 
@@ -77,15 +85,39 @@ def load_ign(path: Path) -> dict[str, BaseGeometry]:
     return shapes
 
 
-def restrict_tierra_del_fuego(geom: BaseGeometry) -> MultiPolygon:
-    kept = [
-        p
-        for p in geom.geoms
-        if p.representative_point().x < TDF_MAX_LON and p.representative_point().y > TDF_MIN_LAT
-    ]
-    if not kept:
-        raise GeoBuildError("Tierra del Fuego quedó vacía tras el recorte")
-    return MultiPolygon(kept)
+def classify_tdf_part(polygon: BaseGeometry) -> str:
+    """'main' (sector insular austral), 'malvinas' o 'remote' (Antártida e islas australes)."""
+    point = polygon.representative_point()
+    x, y = point.x, point.y
+    if x < TDF_MAIN_MAX_LON and y > TDF_MAIN_MIN_LAT:
+        return "main"
+    lon0, lon1, lat0, lat1 = MALVINAS_BOX
+    if lon0 <= x <= lon1 and lat0 <= y <= lat1:
+        return "malvinas"
+    return "remote"
+
+
+def split_tierra_del_fuego(geom: BaseGeometry) -> tuple[MultiPolygon, list[Polygon]]:
+    """(sector principal, resto ya simplificado). El principal entra al coverage con las demás provincias."""
+    main: list[Polygon] = []
+    rest: list[Polygon] = []
+    for part in geom.geoms:
+        kind = classify_tdf_part(part)
+        if kind == "main":
+            main.append(part)
+            continue
+        if kind == "malvinas":
+            tol, min_area = MALVINAS_TOLERANCE, MALVINAS_MIN_AREA
+        else:
+            tol, min_area = REMOTE_TOLERANCE, REMOTE_MIN_AREA
+        if part.area < min_area:
+            continue
+        simple = part.simplify(tol, preserve_topology=True)
+        if not simple.is_empty and simple.geom_type == "Polygon":
+            rest.append(simple)
+    if not main:
+        raise GeoBuildError("Tierra del Fuego quedó sin su sector principal")
+    return MultiPolygon(main), rest
 
 
 def simplify(shapes: dict[str, BaseGeometry], tolerance: float) -> dict[str, MultiPolygon]:
@@ -109,7 +141,9 @@ def to_feature_collection(
 ) -> dict:
     features = []
     for j in catalog.PROVINCES:
-        geometry = shapely.geometry.mapping(shapes[j.slug])
+        # set_precision ajusta a la grilla CONSERVANDO la validez; redondear número por número no.
+        snapped = as_multipolygon(shapely.set_precision(shapes[j.slug], 10**-COORD_DECIMALS))
+        geometry = shapely.geometry.mapping(snapped)
         features.append(
             {
                 "type": "Feature",
@@ -146,8 +180,11 @@ def to_feature_collection(
 def build(input_path: Path, *, tolerance: float = DEFAULT_TOLERANCE, retrieved: date | None = None):
     """Devuelve (FeatureCollection, {slug: geometría simplificada}) para controlar su calidad."""
     shapes = load_ign(input_path)
-    shapes["tierra-del-fuego"] = restrict_tierra_del_fuego(shapes["tierra-del-fuego"])
+    shapes["tierra-del-fuego"], tdf_rest = split_tierra_del_fuego(shapes["tierra-del-fuego"])
     simplified = simplify(shapes, tolerance)
+    simplified["tierra-del-fuego"] = MultiPolygon([*simplified["tierra-del-fuego"].geoms, *tdf_rest])
+    # Simplificar partes por separado puede dejarlas superpuestas: se entrega siempre geometría válida.
+    simplified = {slug: as_multipolygon(geom) for slug, geom in simplified.items()}
     collection = to_feature_collection(
         simplified,
         input_sha256=sha256_file(input_path),

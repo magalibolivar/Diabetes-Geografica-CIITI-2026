@@ -9,7 +9,7 @@ import pytest
 
 from mapa import catalog
 from mapa.config import get_settings
-from mapa.etl import geo, geoqa
+from mapa.etl import geo, geo_build, geoqa
 
 GEO_FILE = get_settings().geo_file
 
@@ -43,9 +43,19 @@ def test_buenos_aires_no_invade_a_sus_vecinas(shapes):
     assert shapes["buenos-aires"].bounds[3] < -33.0
 
 
-def test_tierra_del_fuego_es_solo_el_sector_insular(shapes):
-    minx, miny, maxx, maxy = shapes["tierra-del-fuego"].bounds
-    assert miny > -56.5 and maxx < -62.0
+def test_tierra_del_fuego_conserva_todo_su_territorio_oficial(shapes):
+    """La feature oficial incluye Malvinas, islas australes y el sector antártico."""
+    tdf = shapes["tierra-del-fuego"]
+    kinds = {geo_build.classify_tdf_part(p) for p in tdf.geoms}
+    assert kinds == {"main", "malvinas", "remote"}
+    assert tdf.bounds[1] < -80  # el sector antártico llega cerca del polo
+    assert tdf.bounds[2] > -30  # y las Sandwich del Sur, casi a 26°O
+
+
+def test_las_malvinas_estan_al_este_de_santa_cruz(shapes):
+    malvinas = [p for p in shapes["tierra-del-fuego"].geoms if geo_build.classify_tdf_part(p) == "malvinas"]
+    assert len(malvinas) >= 2  # Soledad y Gran Malvina, como mínimo
+    assert max(p.area for p in malvinas) > 0.5
 
 
 def test_el_archivo_es_liviano():
@@ -56,7 +66,15 @@ def test_declara_su_fuente_y_sus_modificaciones():
     meta = json.loads(GEO_FILE.read_text(encoding="utf-8"))["metadata"]
     assert "IGN" in meta["source"] and "Ley 27.275" in meta["terms"]
     assert len(meta["input_sha256"]) == 64
-    assert any("Tierra del Fuego" in m for m in meta["modifications"])
+    assert any("Antártida" in m for m in meta["modifications"])
+
+
+def test_la_geometria_publicada_es_valida():
+    """Se mira el archivo tal cual, no tras `make_valid` al leerlo."""
+    from shapely.geometry import shape
+
+    for feature in json.loads(GEO_FILE.read_text(encoding="utf-8"))["features"]:
+        assert shape(feature["geometry"]).is_valid, feature["id"]
 
 
 def test_hay_una_feature_por_provincia(shapes):
