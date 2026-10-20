@@ -1,0 +1,56 @@
+# Base apta para producción (Dokploy): nada publica puertos acá.
+# En local, docker-compose.override.yml se aplica solo y abre el 5432/8000 en 127.0.0.1.
+name: mapa
+
+x-api-env: &api-env
+  MAPA_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  MAPA_ENVIRONMENT: ${MAPA_ENVIRONMENT:-dev}
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./api
+    image: mapa-api:local   # la misma imagen sirve a la API y al ETL
+    restart: unless-stopped
+    environment: *api-env
+    depends_on:
+      db:
+        condition: service_healthy
+    # Migra al arrancar: con una sola réplica es seguro y deja el esquema siempre al día.
+    command: ["sh", "-c", "alembic upgrade head && uvicorn mapa.api.main:app --host 0.0.0.0 --port 8000"]
+
+  # Tareas de datos puntuales (no corre con `up`):
+  #   docker compose run --rm etl bootstrap
+  #   docker compose run --rm etl etl load --all
+  etl:
+    build: ./api
+    image: mapa-api:local
+    profiles: ["tools"]
+    entrypoint: ["mapa"]
+    environment:
+      <<: *api-env
+      MAPA_SOURCE_DIR: /sources/data
+      MAPA_GEO_FILE: /sources/geo/argentina_provincias.geojson
+    volumes:
+      - ../data:/sources/data:ro
+      - ./data/geo:/sources/geo:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
