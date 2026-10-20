@@ -164,7 +164,7 @@
 						class="xlabel"
 						x={ex.labelAt[0]}
 						y={ex.labelAt[1] - (ex.frame ? 12 : 0)}
-						text-anchor={ex.frame ? 'middle' : 'start'}
+						text-anchor="middle"
 					>
 						<tspan>{ex.label}</tspan>
 						<tspan class="sub" x={ex.labelAt[0]} dy="12">sin datos</tspan>

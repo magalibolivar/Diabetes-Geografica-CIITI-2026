@@ -41,7 +41,8 @@ const W = 600;
 const H = 940;
 const PAD = 12;
 /** Recuadro de Antártida e islas australes: el hueco libre a la derecha de la Patagonia. */
-const INSET = { x: 352, y: 690, width: 238, height: 240 };
+/** x ≥ 386: las Malvinas llegan hasta x≈355 y su etiqueta queda debajo, así que no se pisan. */
+const INSET = { x: 386, y: 672, width: 204, height: 258 };
 
 const TDF = 'tierra-del-fuego';
 
@@ -90,13 +91,13 @@ export async function loadMapGeometry(): Promise<MapGeometry> {
 	const extras: MapExtra[] = [];
 	if (parts.malvinas.length) {
 		const geometry = { type: 'MultiPolygon' as const, coordinates: parts.malvinas };
-		const c = path.centroid(geometry) as [number, number];
+		const [[x0], [x1, y1]] = path.bounds(geometry);
 		extras.push({
 			id: 'malvinas',
 			label: 'Islas Malvinas',
 			aria: 'Islas Malvinas: territorio sin datos en esta encuesta. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
 			path: path(geometry) ?? '',
-			labelAt: [c[0] + 22, c[1] + 4],
+			labelAt: [(x0 + x1) / 2, y1 + 14], // debajo de las islas, centrada
 			belongsTo: TDF
 		});
 	}
