@@ -3,7 +3,8 @@
 Sitio público e interactivo sobre diabetes y determinantes sociales en las 24 jurisdicciones,
 con una API interna que es la fuente de verdad de los datos.
 
-> Estado: **backend (datos + API + geometría oficial del IGN) listo y probado**. El sitio (`web/`) es el próximo paso.
+> Estado: **backend y sitio funcionando** (datos + API + geometría del IGN + web con historia, mapa, mosaico,
+> fichas, comparador y metodología).
 
 ## Arquitectura
 
@@ -18,7 +19,8 @@ con una API interna que es la fuente de verdad de los datos.
   consume de servidor a servidor; el navegador de la gente nunca le habla.
 - **Los datos nuevos entran como borrador** y recién se ven en el sitio al publicarlos.
   Publicar archiva la versión anterior; volver atrás es republicar la archivada.
-- Decisiones y motivos: [`docs/adr/0001-arquitectura.md`](docs/adr/0001-arquitectura.md).
+- Decisiones y motivos: [`docs/adr/0001-arquitectura.md`](docs/adr/0001-arquitectura.md) (backend) y
+  [`docs/adr/0002-frontend.md`](docs/adr/0002-frontend.md) (sitio). Sitio: [`web/README.md`](web/README.md).
 - **Hallazgos sobre los datos** (leer antes de escribir copy del sitio): [`docs/DATOS.md`](docs/DATOS.md).
 
 ## Levantar todo en local
@@ -29,10 +31,12 @@ Requiere Docker. Desde esta carpeta:
 cp .env.example .env            # y cambiar POSTGRES_PASSWORD
 docker compose up -d db api
 docker compose run --rm etl bootstrap          # migra, siembra, carga y publica (solo dev)
-docker compose run --rm etl keys create --name "mi-nombre" --scope read
+docker compose run --rm etl keys create --name web --scope read     # → pegar en MAPA_WEB_API_KEY (.env)
+docker compose up -d web
 ```
 
-La API queda en `http://127.0.0.1:8000` (Swagger en `/docs`, solo en `dev`).
+- Sitio: `http://127.0.0.1:3000` · API: `http://127.0.0.1:8000` (Swagger en `/docs`, solo en `dev`).
+- Para una clave personal de la API: `docker compose run --rm etl keys create --name "mi-nombre" --scope read`.
 
 ```bash
 curl -H "X-API-Key: <tu clave>" "http://127.0.0.1:8000/v1/observations?indicator=diabetes_treatment"
@@ -84,6 +88,7 @@ uv run ruff check .
 ## Despliegue (Dokploy)
 
 `docker-compose.yml` es apto para producción: no publica puertos. Para publicar el sitio se
-asigna dominio **solo al servicio `web`**; `api` y `db` quedan en la red interna. En producción
-poner `MAPA_ENVIRONMENT=prod` (apaga `/docs` y el comando `bootstrap`). Pendiente: servicio
-`web`, y definir cómo llega `../data` (insumos del ETL) al servidor.
+asigna dominio **solo al servicio `web`** (variable `MAPA_PUBLIC_ORIGIN` = su URL pública, y compresión
+activada en Traefik); `api` y `db` quedan en la red interna. En producción poner
+`MAPA_ENVIRONMENT=prod` (apaga `/docs` y el comando `bootstrap`). Pendiente: definir cómo llega `../data`
+(insumos del ETL) al servidor.

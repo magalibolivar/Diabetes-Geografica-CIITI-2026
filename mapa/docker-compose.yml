@@ -33,6 +33,20 @@ services:
     # Migra al arrancar: con una sola réplica es seguro y deja el esquema siempre al día.
     command: ["sh", "-c", "alembic upgrade head && uvicorn mapa.api.main:app --host 0.0.0.0 --port 8000"]
 
+  # Sitio público. Es el único servicio que debe tener dominio: habla con la API por la red interna.
+  web:
+    build: ./web
+    image: mapa-web:local
+    restart: unless-stopped
+    environment:
+      MAPA_API_URL: http://api:8000
+      MAPA_API_KEY: ${MAPA_WEB_API_KEY:-}   # crear con: docker compose run --rm etl keys create --name web --scope read
+      # Detrás de un proxy (Traefik/Dokploy) debe ser la URL pública, p. ej. https://mapa.ejemplo.com
+      ORIGIN: ${MAPA_PUBLIC_ORIGIN:-http://localhost:3000}
+    depends_on:
+      api:
+        condition: service_healthy
+
   # Tareas de datos puntuales (no corre con `up`):
   #   docker compose run --rm etl bootstrap
   #   docker compose run --rm etl etl load --all
