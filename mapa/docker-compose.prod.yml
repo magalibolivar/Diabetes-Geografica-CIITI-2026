@@ -1,0 +1,64 @@
+# Dokploy: seleccionar este archivo, sin docker-compose.override.yml de desarrollo.
+# Sólo web recibe dominio; api y db no publican puertos en el host.
+name: diabetes
+
+x-api-env: &api-env
+  MAPA_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:?required}:${POSTGRES_PASSWORD:?required}@db:5432/${POSTGRES_DB:?required}
+  MAPA_ENVIRONMENT: prod
+  MAPA_SOURCE_DIR: /sources/data
+  MAPA_GEO_FILE: /sources/geo/argentina_provincias.geojson
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      POSTGRES_DB: ${POSTGRES_DB:?required}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: mapa/api/Dockerfile.prod
+    image: diabetes-api:local
+    restart: unless-stopped
+    environment:
+      <<: *api-env
+      MAPA_WEB_API_KEY: ${MAPA_WEB_API_KEY:?required}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - private
+    command: ["sh", "-c", "alembic upgrade head && mapa keys ensure-web && uvicorn mapa.api.main:app --host 0.0.0.0 --port 8000"]
+
+  web:
+    build: ./web
+    image: diabetes-web:local
+    restart: unless-stopped
+    environment:
+      MAPA_API_URL: http://api:8000
+      MAPA_API_KEY: ${MAPA_WEB_API_KEY:?required}
+      ORIGIN: https://diabetes.mmcloud.dev
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - private
+
+volumes:
+  db_data:
+
+networks:
+  private:
+    internal: true

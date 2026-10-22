@@ -1,6 +1,8 @@
 """Línea de comandos de MAPA. Es la *única* vía de escritura de datos: la API es de lectura."""
 
 import json
+import os
+import re
 from datetime import UTC, date, datetime
 from pathlib import Path
 
@@ -131,6 +133,33 @@ def keys_create(
         session.commit()
     typer.echo(f"Clave para «{name}» ({', '.join(scope)}):\n\n  {key.plaintext}\n")
     typer.echo("Guardala ahora: no se puede volver a mostrar.")
+
+
+@keys_app.command("ensure-web")
+def keys_ensure_web() -> None:
+    """Sincroniza la clave web provista por el entorno, sin mostrarla ni rotarla."""
+    plaintext = os.environ.get("MAPA_WEB_API_KEY", "")
+    if not re.fullmatch(r"mk_[0-9a-f]{8}_[0-9a-f]{48}", plaintext):
+        raise typer.BadParameter(
+            "MAPA_WEB_API_KEY debe ser una clave aleatoria con formato mk_<8 hex>_<48 hex>"
+        )
+    prefix = security.parse_prefix(plaintext)
+    with new_session() as session:
+        existing = session.scalar(select(ApiKey).where(ApiKey.prefix == prefix))
+        if existing is not None:
+            if (
+                existing.revoked_at
+                or not security.verify_key(plaintext, existing.key_hash)
+                or existing.scopes != ["read"]
+            ):
+                raise typer.BadParameter(
+                    "La clave web configurada entra en conflicto con una clave existente"
+                )
+            typer.echo("Clave web de lectura ya configurada.")
+            return
+        session.add(ApiKey(name="web", prefix=prefix, key_hash=security.hash_key(plaintext), scopes=["read"]))
+        session.commit()
+    typer.echo("Clave web de lectura configurada.")
 
 
 @keys_app.command("list")

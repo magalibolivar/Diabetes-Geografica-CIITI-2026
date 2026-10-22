@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://mapa:mapa@localhost:5432/mapa"
     environment: str = "dev"  # dev | prod
 
-    # Insumos del ETL (se montan de sólo lectura en Docker).
+    # Insumos del ETL (montados en desarrollo; incluidos en la imagen de producción).
     source_dir: Path = REPO_ROOT / "data"
     # Capa oficial del IGN generada con `mapa geo build` (ver mapa/data/geo/README.md).
     geo_file: Path = REPO_ROOT / "mapa" / "data" / "geo" / "argentina_provincias.geojson"

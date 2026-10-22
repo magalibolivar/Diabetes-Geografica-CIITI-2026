@@ -87,8 +87,17 @@ uv run ruff check .
 
 ## Despliegue (Dokploy)
 
-`docker-compose.yml` es apto para producción: no publica puertos. Para publicar el sitio se
-asigna dominio **solo al servicio `web`** (variable `MAPA_PUBLIC_ORIGIN` = su URL pública, y compresión
-activada en Traefik); `api` y `db` quedan en la red interna. En producción poner
-`MAPA_ENVIRONMENT=prod` (apaga `/docs` y el comando `bootstrap`). Pendiente: definir cómo llega `../data`
-(insumos del ETL) al servidor.
+Usar [`docker-compose.prod.yml`](docker-compose.prod.yml), no el override local. El archivo
+no publica puertos y empaqueta en la imagen interna sólo los insumos públicos agregados
+que necesita el ETL; así no depende de un montaje al checkout temporal de Dokploy.
+Asignar dominio **solo al servicio `web`**. `api` y `db` quedan en la red interna.
+Las variables requeridas son `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` y
+`MAPA_WEB_API_KEY`; se guardan en Dokploy, nunca en Git. La API registra de forma
+idempotente la clave de lectura configurada, sin imprimirla. En producción se usa
+`MAPA_ENVIRONMENT=prod`, que apaga `/docs` y el comando `bootstrap`.
+
+La carga inicial se hace luego de crear el volumen nuevo: `mapa db seed`,
+`mapa etl load --all`, revisión de versiones y publicación de cada borrador. El sitio
+solo recibe dominio después de comprobar la carga. Antes de actualizar una base
+existente, hacer un respaldo PostgreSQL. Las versiones de datos archivadas pueden
+republicarse para revertir una carga; el código se revierte al commit anterior.
