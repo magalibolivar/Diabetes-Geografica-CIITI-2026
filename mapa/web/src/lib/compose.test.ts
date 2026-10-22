@@ -51,6 +51,18 @@ const atlas = buildAtlas(
 );
 
 describe('buildAtlas', () => {
+	it('muestra NBI 2022 aunque la API entregue primero el dato de 2010', () => {
+		const nbi = indicator('nbi_households');
+		const result = buildAtlas(
+			[nbi],
+			[jur('argentina', 'country'), jur('chaco', 'province')],
+			[
+				{ jurisdiction: 'chaco', indicator: 'nbi_households', period: '2022', value: 11.2, cv: null, reliability: null, dataset: 'indec-nbi-2022' },
+				{ jurisdiction: 'chaco', indicator: 'nbi_households', period: '2010', value: 21.3, cv: null, reliability: null, dataset: 'indec-nbi-2010' }
+			]
+		);
+		expect(result.values.nbi_households.chaco).toMatchObject({ value: 11.2, period: '2022' });
+	});
 	it('separa el total del país de las provincias', () => {
 		expect(atlas.country.slug).toBe('argentina');
 		expect(atlas.provinces.map((p) => p.slug)).toEqual(['chubut', 'la-pampa']);

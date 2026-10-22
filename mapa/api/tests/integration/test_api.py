@@ -73,8 +73,11 @@ def test_clave_revocada_deja_de_funcionar(client, published):
 def test_observaciones_publicadas(client, read_key):
     r = client.get("/v1/observations?limit=20000", headers=auth(read_key))
     rows = r.json()
-    # 9 indicadores ENFR × (24 provincias + total) + 4 de contexto × 24 provincias
-    assert len(rows) == 9 * 25 + 4 * 24
+    # ENFR; cuatro contextos históricos; y NBI 2022 con 24 provincias y total.
+    assert len(rows) == 9 * 25 + 4 * 24 + 25
+    nbi_2022 = [row for row in rows if row["dataset"] == "indec-nbi-2022"]
+    assert len(nbi_2022) == 25
+    assert next(row["value"] for row in nbi_2022 if row["jurisdiction"] == "argentina") == 6.7
     assert {row["version_status"] for row in rows} == {"published"}
 
 
@@ -168,7 +171,7 @@ def test_borrador_publicacion_y_rollback(client, read_key, draft_key):
         assert draft.created and draft.version.status == "draft"
 
         public = client.get(
-            "/v1/observations?indicator=nbi_households&jurisdiction=chaco", headers=auth(read_key)
+            "/v1/observations?indicator=nbi_households&jurisdiction=chaco&period=2010", headers=auth(read_key)
         ).json()
         assert [r["version_id"] for r in public] == [before_id]
 
@@ -182,13 +185,13 @@ def test_borrador_publicacion_y_rollback(client, read_key, draft_key):
         # Publicar archiva la anterior...
         load.publish_version(session, draft.version.id)
         public = client.get(
-            "/v1/observations?indicator=nbi_households&jurisdiction=chaco", headers=auth(read_key)
+            "/v1/observations?indicator=nbi_households&jurisdiction=chaco&period=2010", headers=auth(read_key)
         ).json()
         assert [r["version_id"] for r in public] == [draft.version.id]
 
         # ...y el rollback es volver a publicar la versión archivada.
         load.publish_version(session, before_id)
         public = client.get(
-            "/v1/observations?indicator=nbi_households&jurisdiction=chaco", headers=auth(read_key)
+            "/v1/observations?indicator=nbi_households&jurisdiction=chaco&period=2010", headers=auth(read_key)
         ).json()
         assert [r["version_id"] for r in public] == [before_id]

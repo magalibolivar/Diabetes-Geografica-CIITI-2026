@@ -22,6 +22,13 @@
 			{indicator.label}{indicator.unit === '%' ? ' (%)' : ` (${indicator.unit})`}
 		{/if}
 	</div>
+	<p class="direction">
+		{#if scale.measure === 'delta'}
+			De valores por debajo a valores por encima de la referencia. Una diferencia de 3 puntos porcentuales significa, por ejemplo, 15% frente a 12%.
+		{:else}
+			Del amarillo claro al rojo: de menor a mayor {indicator.unit === '%' ? 'porcentaje' : 'valor'}. El color indica cantidad, no si el resultado es bueno o malo.
+		{/if}
+	</p>
 	<ul class="bins" style="--n:{scale.swatches.length}">
 		{#each scale.swatches as s (s.label)}
 			<li>
@@ -33,11 +40,11 @@
 	{#if showHatch || showNoData}
 		<div class="keys">
 			{#if showHatch}
-				<span class="flag">Poco confiable según el INDEC</span>
-				<span class="flag caution">Con precaución</span>
+				<span class="flag">Rayado: poco confiable según el INDEC</span>
+				<span class="flag caution">Rayado: usar con precaución</span>
 			{/if}
 			{#if showNoData}
-				<span class="nodata">Sin datos (la encuesta no releva Malvinas, Antártida ni las islas australes)</span>
+				<span class="nodata">Sin datos para Malvinas, Antártida e islas australes en este indicador</span>
 			{/if}
 		</div>
 	{/if}
@@ -52,6 +59,7 @@
 		margin-bottom: 0.55rem;
 		line-height: 1.3;
 	}
+	.direction { color: var(--ink-2); line-height: 1.4; margin: 0 0 0.7rem; }
 	.bins {
 		list-style: none;
 		margin: 0;

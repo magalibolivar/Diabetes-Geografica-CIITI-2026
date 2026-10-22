@@ -17,10 +17,10 @@
 </script>
 
 <details class="tbl">
-	<summary>Ver los datos como tabla</summary>
+	<summary>Ver los datos como tabla ({indicator.lineage[0]?.referencePeriod ?? 'año no indicado'})</summary>
 	<div class="scroll">
 		<table>
-			<caption class="sr-only">{indicator.label} por provincia</caption>
+			<caption>{indicator.label} por provincia · {indicator.lineage[0]?.referencePeriod ?? 'período no indicado'} · {indicator.lineage[0]?.universe ?? 'población indicada por la fuente'}</caption>
 			<thead>
 				<tr>
 					<th scope="col">Provincia</th>
@@ -79,6 +79,7 @@
 		font-weight: 600;
 		font-size: 0.95rem;
 	}
+	caption { text-align: left; color: var(--ink-2); font-size: .82rem; padding: 0 0 .5rem; white-space: normal; }
 	.scroll {
 		overflow-x: auto;
 		margin-top: 1rem;

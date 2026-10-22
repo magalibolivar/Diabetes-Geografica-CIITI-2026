@@ -95,7 +95,7 @@ export async function loadMapGeometry(): Promise<MapGeometry> {
 		extras.push({
 			id: 'malvinas',
 			label: 'Islas Malvinas',
-			aria: 'Islas Malvinas: territorio sin datos en esta encuesta. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
+			aria: 'Islas Malvinas: territorio sin datos en este indicador. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
 			path: path(geometry) ?? '',
 			labelAt: [(x0 + x1) / 2, y1 + 14], // debajo de las islas, centrada
 			belongsTo: TDF
@@ -117,7 +117,7 @@ export async function loadMapGeometry(): Promise<MapGeometry> {
 		extras.push({
 			id: 'antartida',
 			label: 'Antártida e islas australes',
-			aria: 'Antártida Argentina e islas del Atlántico Sur (Georgias, Sandwich y Orcadas del Sur): territorio sin datos en esta encuesta. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
+			aria: 'Antártida Argentina e islas del Atlántico Sur (Georgias, Sandwich y Orcadas del Sur): territorio sin datos en este indicador. Forman parte de la provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur. Ver su ficha.',
 			path: polarPath(geometry) ?? '',
 			labelAt: [INSET.x + INSET.width / 2, INSET.y + INSET.height - 12],
 			frame: INSET,

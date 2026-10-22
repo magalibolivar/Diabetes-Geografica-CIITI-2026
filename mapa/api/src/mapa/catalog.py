@@ -96,6 +96,12 @@ SOURCES: tuple[SourceDef, ...] = (
         "INDEC",
         "https://www.indec.gob.ar/",
     ),
+    SourceDef(
+        "indec-nbi-2022",
+        "Censo Nacional de Población, Hogares y Viviendas 2022 · NBI",
+        "INDEC",
+        "https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-47-156",
+    ),
 )
 
 
@@ -131,7 +137,17 @@ DATASETS: tuple[DatasetDef, ...] = (
         "Hogares con NBI por provincia (Censo 2010)",
         "2010",
         "Hogares",
-        "El NBI se releva en años censales; 2010 es el último punto disponible de esta serie.",
+        "Punto histórico del Censo 2010. El mapa muestra el dato censal de 2022 como contexto más reciente.",
+    ),
+    DatasetDef(
+        "indec-nbi-2022",
+        "indec-nbi-2022",
+        "Hogares con al menos una NBI por provincia (Censo 2022)",
+        "2022",
+        "Hogares del Censo 2022",
+        "Porcentaje de hogares con al menos una NBI; calculado de los conteos del Cuadro 2 y "
+        "comprobado con los porcentajes del Cuadro 3. Es un contexto de 2022, no una medición "
+        "simultánea con la ENFR 2018.",
     ),
     DatasetDef(
         "indec-pobreza-2018s2",
@@ -227,8 +243,8 @@ INDICATORS: tuple[IndicatorDef, ...] = (
     ),
     IndicatorDef(
         "nbi_households",
-        "Hogares con NBI",
-        "Hogares con al menos una necesidad básica insatisfecha.",
+        "Hogares con al menos una NBI",
+        "Porcentaje de hogares con al menos una necesidad básica insatisfecha (NBI).",
         "%", 1, "worse", "context",
     ),
     IndicatorDef(
@@ -277,6 +293,10 @@ DATASET_INDICATORS: tuple[DatasetIndicatorDef, ...] = (
     DatasetIndicatorDef(
         "indec-nbi-2010", "nbi_households",
         "serie_nbi_2022.xlsx, hoja NBI_Hogares_%_80_22, columna 2010",
+    ),
+    DatasetIndicatorDef(
+        "indec-nbi-2022", "nbi_households",
+        "serie_nbi_2022.xlsx, Cuadro 2 (conteos de 2022); porcentajes cotejados con Cuadro 3",
     ),
     DatasetIndicatorDef(
         "indec-pobreza-2018s2", "poverty_persons",

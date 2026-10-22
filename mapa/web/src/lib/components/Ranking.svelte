@@ -16,7 +16,7 @@
 		onselect?: (slug: string) => void;
 	} = $props();
 
-	let hideShaky = $state(false);
+	let hideShaky = $state(true);
 
 	const log = $derived(indicator.unit !== '%');
 	const pctUnit = $derived(indicator.unit === '%');
@@ -53,11 +53,14 @@
 		<h3>Ranking</h3>
 		{#if shakyCount > 0}
 			<label class="toggle">
-				<input type="checkbox" bind:checked={hideShaky} />
-				Ocultar las {shakyCount} poco confiables
+				<input type="checkbox" checked={!hideShaky} onchange={(event) => hideShaky = !event.currentTarget.checked} />
+				Mostrar las {shakyCount} estimaciones poco confiables
 			</label>
 		{/if}
 	</div>
+	{#if shakyCount > 0}
+		<p class="rank-note">El INDEC desaconseja comparar esas estimaciones; por eso quedan fuera del ranking inicial. Podés verlas con su advertencia.</p>
+	{/if}
 
 	<ol>
 		{#each rows as r (r.slug)}
@@ -96,6 +99,7 @@
 		margin-bottom: 0.6rem;
 		flex-wrap: wrap;
 	}
+	.rank-note { color: var(--ink-2); font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.8rem; }
 	.toggle {
 		font-size: 0.8rem;
 		color: var(--ink-2);

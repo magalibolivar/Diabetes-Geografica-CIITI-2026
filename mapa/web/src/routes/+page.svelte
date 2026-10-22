@@ -1,347 +1,116 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Legend from '#lib/components/Legend.svelte';
-	import Locate from '#lib/components/Locate.svelte';
 	import Map from '#lib/components/Map.svelte';
 	import ProvTip from '#lib/components/ProvTip.svelte';
-	import { buildStory } from '#lib/story';
+	import { num } from '#lib/format';
 	import { buildScale, mapItems } from '#lib/viz';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	const atlas = $derived(data.atlas);
-	const steps = $derived(buildStory(atlas));
-
-	/** -1 = portada; 0.. = pasos de la historia. */
-	let active = $state(-1);
-	let introEl: HTMLElement | undefined = $state();
-	let outroEl: HTMLElement | undefined = $state();
-	let stepEls: HTMLElement[] = $state([]);
-
-	const current = $derived(steps[Math.max(active, 0)]);
-	const indicator = $derived(atlas.indicators.find((i) => i.slug === current?.indicator));
-	const scale = $derived(indicator ? buildScale(atlas, indicator, 'value') : null);
-	const items = $derived(indicator && scale ? mapItems(atlas, indicator, scale) : []);
+	const prevalence = $derived(atlas.indicators.find((i) => i.slug === 'diabetes_prevalence'));
+	const screening = $derived(atlas.indicators.find((i) => i.slug === 'glucose_screening'));
+	const prevalenceValue = $derived(atlas.values.diabetes_prevalence?.[atlas.country.slug]?.value);
+	const screeningValue = $derived(atlas.values.glucose_screening?.[atlas.country.slug]?.value);
+	const scale = $derived(prevalence ? buildScale(atlas, prevalence, 'value') : null);
+	const items = $derived(prevalence && scale ? mapItems(atlas, prevalence, scale) : []);
 	const hasShaky = $derived(items.some((i) => i.reliability === 'unreliable' || i.reliability === 'caution'));
-
-	onMount(() => {
-		let cleanup = () => {};
-		let dead = false;
-
-		(async () => {
-			const [{ gsap }, { ScrollTrigger }, { default: Lenis }] = await Promise.all([
-				import('gsap'),
-				import('gsap/ScrollTrigger'),
-				import('lenis')
-			]);
-			if (dead) return;
-			gsap.registerPlugin(ScrollTrigger);
-
-			const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-			let lenis: InstanceType<typeof Lenis> | undefined;
-			let tick: ((t: number) => void) | undefined;
-			if (!reduce) {
-				lenis = new Lenis({ lerp: 0.11 });
-				lenis.on('scroll', ScrollTrigger.update);
-				tick = (t: number) => lenis!.raf(t * 1000);
-				gsap.ticker.add(tick);
-				gsap.ticker.lagSmoothing(0);
-			}
-
-			const ctx = gsap.context(() => {
-				if (!reduce) {
-					gsap.from('[data-reveal]', { y: 28, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.09, delay: 0.1 });
-					gsap.from('.stage .mapwrap', { opacity: 0, scale: 0.97, duration: 1.2, ease: 'power2.out' });
-					gsap.from('.stage .poly:not(.over):not(.marker):not(.ring):not(.hring)', {
-						opacity: 0,
-						duration: 0.7,
-						ease: 'power1.out',
-						stagger: { each: 0.03, from: 'random' },
-						clearProps: 'opacity'
-					});
-				}
-				if (introEl) {
-					ScrollTrigger.create({
-						trigger: introEl,
-						start: 'top 90%',
-						end: 'bottom 55%',
-						onToggle: (self) => self.isActive && (active = -1)
-					});
-				}
-				stepEls.forEach((el, i) => {
-					if (!el) return;
-					ScrollTrigger.create({
-						trigger: el,
-						start: 'top 55%',
-						end: 'bottom 55%',
-						onToggle: (self) => self.isActive && (active = i)
-					});
-				});
-			});
-
-			cleanup = () => {
-				ctx.revert();
-				if (tick) gsap.ticker.remove(tick);
-				lenis?.destroy();
-			};
-		})();
-
-		return () => {
-			dead = true;
-			cleanup();
-		};
-	});
 </script>
 
 <svelte:head>
-	<title>MAPA · Atlas de la diabetes en Argentina</title>
-	<meta
-		name="description"
-		content="Qué dicen —y qué no— los datos oficiales sobre diabetes, atención y contexto en las 24 provincias argentinas, con el margen de error de cada cifra."
-	/>
-	<meta property="og:title" content="MAPA · Atlas de la diabetes en Argentina" />
+	<title>Diabetes en Argentina · Datos por provincia</title>
+	<meta name="description" content="Dos datos de la encuesta de salud de 2018 y un mapa para explorar la diabetes declarada por provincia en Argentina." />
+	<meta property="og:title" content="Diabetes en Argentina" />
 	<meta property="og:locale" content="es_AR" />
 </svelte:head>
 
-<div class="wrap story">
-	<div class="steps">
-		<section class="step intro" bind:this={introEl}>
-			<div class="eyebrow" data-reveal>Atlas de la diabetes en Argentina</div>
-			<h1 data-reveal>Diabetes en Argentina, <em>provincia</em> por provincia.</h1>
-			<p class="lede" data-reveal>
-				Qué dicen —y qué no— los datos oficiales sobre diabetes, atención y contexto en las 24
-				jurisdicciones, con el margen de error de cada cifra a la vista.
-			</p>
-			<div class="ctas" data-reveal>
-				<Locate />
-				<a class="more" href="/explorar">Explorar todos los datos →</a>
-			</div>
-			<p class="hint" data-reveal aria-hidden="true">Seguí bajando <span>↓</span></p>
-		</section>
+<div class="wrap home">
+	<section class="hero" aria-labelledby="hero-title">
+		<div class="eyebrow">Datos públicos · Argentina</div>
+		<h1 id="hero-title">Diabetes en Argentina</h1>
+		<p class="lede">Qué muestran los datos públicos por provincia.</p>
+		<p class="intro">La Encuesta Nacional de Factores de Riesgo de 2018 preguntó a personas adultas sobre su salud. Estas son dos formas de empezar a leer sus resultados.</p>
+	</section>
 
-		{#each steps as s, i (s.id)}
-			<section class="step" class:on={active === i} id={s.id} bind:this={stepEls[i]}>
-				<div class="eyebrow">{s.eyebrow}</div>
-				<h2>{s.title}</h2>
-				{#each s.paragraphs as p (p)}
-					<p>{p}</p>
-				{/each}
-			</section>
-		{/each}
+	<section class="findings" aria-label="Dos datos para empezar">
+		{#if prevalence && prevalenceValue != null}
+			<article class="finding card">
+				<div class="eyebrow">Glucemia elevada o diabetes declarada</div>
+				<div class="value">{num(prevalenceValue, 1)}%</div>
+				<h2>Lo declaró alrededor de una de cada ocho personas adultas.</h2>
+				<p>Es una respuesta a la encuesta, no un diagnóstico confirmado ni una cuenta de todas las personas con diabetes.</p>
+				<p class="source">ENFR 2018 · Personas de 18 años o más en localidades urbanas de 5.000 habitantes o más.</p>
+				<a href="/explorar?i=diabetes_prevalence">Ver en el mapa →</a>
+			</article>
+		{/if}
+		{#if screening && screeningValue != null}
+			<article class="finding card">
+				<div class="eyebrow">Medición de glucosa</div>
+				<div class="value">{num(screeningValue, 1)}%</div>
+				<h2>Se había medido el azúcar en sangre alguna vez.</h2>
+				<p>“Alguna vez” no indica si el control fue reciente ni si se hizo con la frecuencia adecuada.</p>
+				<p class="source">ENFR 2018 · Personas de 18 años o más en localidades urbanas de 5.000 habitantes o más.</p>
+				<a href="/explorar?i=glucose_screening">Ver en el mapa →</a>
+			</article>
+		{/if}
+	</section>
 
-		<section class="step outro on" bind:this={outroEl}>
-			<div class="eyebrow">Antes de sacar conclusiones</div>
-			<h2>Lo que estos datos no dicen.</h2>
-			<ul class="nots">
-				<li><strong>No cuentan cuántas personas tienen diabetes.</strong> Miden lo que la gente declara; quien nunca se hizo un análisis no lo sabe.</li>
-				<li><strong>No explican causas.</strong> Son comparaciones entre 24 provincias, y las provincias no son personas.</li>
-				<li><strong>No cubren a todos.</strong> Solo localidades de 5.000 o más habitantes, y con datos de 2018 o anteriores.</li>
-			</ul>
-			<div class="outro-links">
-				<a class="chip big" href="/explorar">Explorar el mapa</a>
-				<a class="chip big" href="/comparar">Comparar provincias</a>
-				<a class="chip big" href="/metodologia">Cómo se hizo</a>
+	<section class="explore" aria-labelledby="explore-title">
+		<div class="explore-copy">
+			<div class="eyebrow">Explorá tu provincia</div>
+			<h2 id="explore-title">Un dato nacional, distintas realidades provinciales.</h2>
+			<p>El mapa muestra el porcentaje que declaró glucemia elevada o diabetes en cada provincia. Seleccioná una para abrir su ficha, o entrá al explorador para cambiar de indicador.</p>
+			<div class="links">
+				<a class="chip primary" href="/explorar">Abrir el mapa →</a>
+				<a class="chip" href="/explorar?a=1">Profundizar en los datos →</a>
 			</div>
-		</section>
-	</div>
-
-	<div class="stage" aria-label="Mapa de la historia">
-		{#if current && indicator && scale}
-			<div class="now" aria-live="polite">
-				<span class="eyebrow">Mostrando</span>
-				<strong>{indicator.label}</strong>
-				<span class="per">{indicator.lineage[0]?.referencePeriod ?? ''}</span>
-			</div>
-			<div class="mapwrap">
-				<Map
-					geometry={data.geometry}
-					{items}
-					mode={current.mode}
-					onselect={(slug) => goto(`/provincia/${slug}`)}
-					caption="Mapa de {indicator.label} por provincia. Tocá una provincia para ver su ficha."
-				>
-					{#snippet tip(slug)}
-						<ProvTip {atlas} {indicator} {slug} />
-					{/snippet}
-				</Map>
-			</div>
-			<div class="lg">
-				<Legend {scale} {indicator} showHatch={hasShaky} showNoData={current.mode === 'geo'} />
+		</div>
+		{#if prevalence && scale}
+			<div class="map-preview card">
+				<div class="mapframe">
+					<Map geometry={data.geometry} {items} mode="geo" onselect={(slug) => goto(`/provincia/${slug}`)} caption="Porcentaje de personas adultas que declaró glucemia elevada o diabetes en 2018, por provincia. Seleccioná una provincia para abrir su ficha.">
+						{#snippet tip(slug)}<ProvTip {atlas} indicator={prevalence} {slug} />{/snippet}
+					</Map>
+				</div>
+				<Legend {scale} indicator={prevalence} showHatch={hasShaky} showNoData={true} />
 			</div>
 		{/if}
-	</div>
+	</section>
+
+	<section class="deeper" aria-labelledby="deeper-title">
+		<div class="eyebrow">Profundizar</div>
+		<h2 id="deeper-title">Más formas de mirar los datos</h2>
+		<p>Compará provincias, consultá otros indicadores y revisá cómo se obtuvo cada cifra.</p>
+		<div class="links">
+			<a href="/explorar?a=1">Todos los indicadores y gráficos →</a>
+			<a href="/comparar">Comparar provincias →</a>
+			<a href="/metodologia">Fuentes y metodología →</a>
+		</div>
+	</section>
 </div>
 
 <style>
-	.story {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(340px, 560px);
-		gap: clamp(2rem, 6vw, 6rem);
-		align-items: start;
-	}
-	.step {
-		min-height: 88vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		padding: 3rem 0;
-		max-width: 36rem;
-		opacity: 0.3;
-		transition: opacity 0.5s var(--ease);
-	}
-	.step.on,
-	.step.intro,
-	.step.outro {
-		opacity: 1;
-	}
-	.step.intro {
-		min-height: calc(100vh - 64px);
-		max-width: 38rem;
-	}
-	.step h2 {
-		margin: 0.8rem 0 1.3rem;
-		font-size: clamp(1.9rem, 3.4vw, 2.9rem);
-	}
-	.step p {
-		font-size: 1.12rem;
-		line-height: 1.6;
-		color: var(--ink-2);
-	}
-	h1 {
-		margin: 1rem 0 1.4rem;
-	}
-	h1 em {
-		font-style: italic;
-		font-weight: 350;
-		font-variation-settings: 'opsz' 144;
-		color: var(--orange-ink);
-	}
-	.lede {
-		margin-bottom: 2.2rem;
-		max-width: 33rem;
-	}
-	.ctas {
-		display: flex;
-		align-items: flex-start;
-		gap: 1.8rem;
-		flex-wrap: wrap;
-	}
-	.more {
-		align-self: center;
-		font-weight: 600;
-	}
-	.hint {
-		margin-top: 3.5rem;
-		font-size: 0.85rem !important;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-	}
-	.hint span {
-		display: inline-block;
-		animation: bob 1.8s ease-in-out infinite;
-	}
-	@keyframes bob {
-		50% {
-			transform: translateY(5px);
-		}
-	}
-	.nots {
-		padding: 0;
-		list-style: none;
-		display: grid;
-		gap: 1rem;
-		margin: 0 0 2rem;
-	}
-	.nots li {
-		font-size: 1.05rem;
-		line-height: 1.55;
-		color: var(--ink-2);
-		padding-left: 1.4rem;
-		position: relative;
-	}
-	.nots li::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0.62em;
-		width: 8px;
-		height: 8px;
-		border-radius: 2px;
-		background: var(--orange);
-	}
-	.nots strong {
-		color: var(--ink);
-	}
-	.outro-links {
-		display: flex;
-		gap: 0.6rem;
-		flex-wrap: wrap;
-	}
-	.chip.big {
-		padding: 0.7rem 1.2rem;
-		font-size: 1rem;
-		font-weight: 500;
-	}
-
-	.stage {
-		position: sticky;
-		top: 78px;
-		height: calc(100vh - 96px);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 1rem;
-	}
-	.now {
-		align-self: flex-start;
-		display: flex;
-		align-items: baseline;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-		font-size: 0.95rem;
-	}
-	.per {
-		color: var(--ink-2);
-		font-size: 0.85rem;
-	}
-	.mapwrap {
-		width: min(100%, calc((100vh - 290px) * 0.638));
-		min-width: 200px;
-	}
-	.lg {
-		width: min(100%, 480px);
-	}
-
-	@media (max-width: 900px) {
-		.story {
-			display: flex;
-			flex-direction: column;
-		}
-		.stage {
-			order: -1;
-			position: sticky;
-			top: 56px;
-			z-index: 4;
-			height: 44vh;
-			padding: 0.6rem 0 0.4rem;
-			gap: 0.4rem;
-			background: var(--page);
-			border-bottom: 1px solid var(--hair);
-		}
-		.mapwrap {
-			width: min(100%, calc((44vh - 90px) * 0.638));
-		}
-		.lg {
-			display: none;
-		}
-		.step {
-			min-height: 74vh;
-		}
-		.step.intro {
-			min-height: auto;
-			padding-top: 2rem;
-		}
-	}
+	.home { padding-top: clamp(3rem, 7vw, 6rem); }
+	.hero { max-width: 48rem; margin-bottom: 3rem; }
+	.hero h1 { margin: .75rem 0 .4rem; }
+	.hero .lede { margin: 0 0 1.3rem; color: var(--orange-ink); }
+	.intro { color: var(--ink-2); font-size: 1.1rem; line-height: 1.6; max-width: 43rem; }
+	.findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+	.finding { padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; align-items: flex-start; }
+	.value { font: 650 clamp(3.5rem, 7vw, 6rem)/1 var(--font-ui); letter-spacing: -.055em; margin: 1.1rem 0; color: var(--seq-5); }
+	.finding h2 { font-size: clamp(1.35rem, 2.2vw, 1.8rem); margin: 0 0 .6rem; }
+	.finding p { color: var(--ink-2); line-height: 1.5; margin: 0 0 1rem; }
+	.finding .source { font-size: .84rem; margin-top: auto; padding-top: .5rem; }
+	.finding a { font-weight: 650; }
+	.explore { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; margin-top: clamp(5rem, 9vw, 9rem); }
+	.explore h2, .deeper h2 { margin: .7rem 0 1rem; }
+	.explore p, .deeper p { color: var(--ink-2); line-height: 1.6; }
+	.links { display: flex; gap: .8rem 1.3rem; flex-wrap: wrap; margin-top: 1.7rem; }
+	.primary { background: var(--ink); color: var(--surface); }
+	.map-preview { padding: 1.2rem; }
+	.mapframe { max-width: 390px; margin: 0 auto 1rem; }
+	.deeper { margin: clamp(5rem, 9vw, 9rem) 0 1rem; padding: 2.5rem 0; border-top: 1px solid var(--hair); }
+	.deeper .links a { font-weight: 600; }
+	@media (max-width: 800px) { .findings, .explore { grid-template-columns: 1fr; } .hero { margin-bottom: 2rem; } }
 </style>

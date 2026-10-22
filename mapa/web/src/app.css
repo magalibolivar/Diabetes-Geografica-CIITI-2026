@@ -5,7 +5,7 @@
 /*
  * Sistema visual: atlas editorial.
  * Papel cálido + tinta, titulares en serif con carácter, TODOS los números en sans.
- * Color: una sola rampa azul (magnitud) validada con el skill dataviz; naranja reservado a la selección.
+ * Color: una rampa secuencial amarillo-naranja-rojo para magnitud; naranja reservado a la selección.
  * Modo oscuro: pasos propios sobre la superficie oscura (no una inversión automática).
  */
 
@@ -25,17 +25,17 @@
 	--orange: #eb6834; /* marca de selección */
 	--orange-ink: #b8400f; /* naranja apto para texto sobre la superficie clara */
 
-	/* Magnitud: una sola tinta, de claro a oscuro. */
-	--seq-1: #b7d3f6;
-	--seq-2: #86b6ef;
-	--seq-3: #5598e7;
-	--seq-4: #2a78d6;
-	--seq-5: #1c5cab;
-	--seq-6: #104281;
+	/* Magnitud: de amarillo claro (menor) a rojo oscuro (mayor). */
+	--seq-1: #fff1b8;
+	--seq-2: #ffd472;
+	--seq-3: #fca64b;
+	--seq-4: #e77735;
+	--seq-5: #c6472d;
+	--seq-6: #942c27;
 	--on-seq-1: #0b0b0b;
 	--on-seq-2: #0b0b0b;
 	--on-seq-3: #0b0b0b;
-	--on-seq-4: #ffffff;
+	--on-seq-4: #0b0b0b;
 	--on-seq-5: #ffffff;
 	--on-seq-6: #ffffff;
 
@@ -82,18 +82,6 @@
 		--blue: #3987e5;
 		--orange: #d95926;
 		--orange-ink: #f08a5d;
-		--seq-1: #184f95;
-		--seq-2: #256abf;
-		--seq-3: #3987e5;
-		--seq-4: #6da7ec;
-		--seq-5: #9ec5f4;
-		--seq-6: #cde2fb;
-		--on-seq-1: #ffffff;
-		--on-seq-2: #ffffff;
-		--on-seq-3: #0b0b0b;
-		--on-seq-4: #0b0b0b;
-		--on-seq-5: #0b0b0b;
-		--on-seq-6: #0b0b0b;
 		--div-1: #9ec5f4;
 		--div-2: #3987e5;
 		--div-3: #184f95;
@@ -126,18 +114,6 @@
 	--blue: #3987e5;
 	--orange: #d95926;
 	--orange-ink: #f08a5d;
-	--seq-1: #184f95;
-	--seq-2: #256abf;
-	--seq-3: #3987e5;
-	--seq-4: #6da7ec;
-	--seq-5: #9ec5f4;
-	--seq-6: #cde2fb;
-	--on-seq-1: #ffffff;
-	--on-seq-2: #ffffff;
-	--on-seq-3: #0b0b0b;
-	--on-seq-4: #0b0b0b;
-	--on-seq-5: #0b0b0b;
-	--on-seq-6: #0b0b0b;
 	--div-1: #9ec5f4;
 	--div-2: #3987e5;
 	--div-3: #184f95;

@@ -6,7 +6,7 @@ import pytest
 
 from mapa import catalog
 from mapa.config import get_settings
-from mapa.etl import context, enfr, geo, verify
+from mapa.etl import context, enfr, geo, nbi, verify
 
 SOURCE_DIR = get_settings().source_dir
 GEO_FILE = get_settings().geo_file
@@ -64,6 +64,17 @@ def test_contexto_trae_24_provincias(dataset):
 def test_densidad_de_tierra_del_fuego_ajustada():
     obs = context.parse_context(SOURCE_DIR, "indec-densidad-2022")
     assert _find(obs, "tierra-del-fuego", "population_density").value == Decimal("8.60")
+
+
+def test_nbi_2022_conserva_2010_y_trae_24_provincias_mas_total():
+    latest = nbi.parse_nbi_2022(SOURCE_DIR)
+    historical = context.parse_context(SOURCE_DIR, "indec-nbi-2010")
+    assert len(latest) == 25
+    assert {o.jurisdiction for o in latest} == {j.slug for j in catalog.JURISDICTIONS}
+    assert all(o.period == "2022" and o.cv is None for o in latest)
+    assert _find(latest, "argentina", "nbi_households").value == Decimal("6.7")
+    assert _find(latest, "chaco", "nbi_households").value == Decimal("11.2")
+    assert all(o.period == "2010" for o in historical)
 
 
 def test_geojson_calza_con_las_24_provincias():

@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from mapa import catalog
 from mapa.db.models import Dataset, DatasetVersion, Indicator, Jurisdiction, Observation
-from mapa.etl import context, enfr
+from mapa.etl import context, enfr, nbi
 from mapa.etl.raw import RawObservation
 
 Reader = Callable[[Path], list[RawObservation]]
@@ -28,6 +28,7 @@ def _context_reader(slug: str) -> Reader:
 
 READERS: dict[str, Reader] = {
     "enfr-2018": enfr.parse_enfr,
+    "indec-nbi-2022": nbi.parse_nbi_2022,
     **{ds: _context_reader(ds) for ds, _ in catalog.CONTEXT_COLUMNS.values()},
 }
 

@@ -9,14 +9,19 @@
 	let { data, children }: LayoutProps = $props();
 
 	const nav = [
+		{ href: '/', label: 'Inicio' },
 		{ href: '/explorar', label: 'Explorar' },
-		{ href: '/comparar', label: 'Comparar' },
-		{ href: '/metodologia', label: 'Metodología' }
+		{ href: '/explorar?a=1', label: 'Profundizar' }
 	];
 	const here = $derived(page.url.pathname);
 	const currentProvince = $derived(
 		here.startsWith('/provincia/') ? decodeURIComponent(here.split('/')[2] ?? '') : ''
 	);
+	function inNav(href: string) {
+		if (href === '/') return here === '/';
+		if (href.includes('?')) return here === '/explorar' && page.url.searchParams.get('a') === '1';
+		return here.startsWith(href) && page.url.searchParams.get('a') !== '1';
+	}
 
 	function jump(e: Event) {
 		const slug = (e.currentTarget as HTMLSelectElement).value;
@@ -32,14 +37,13 @@
 
 <header>
 	<div class="wrap bar">
-		<a class="brand" href="/" aria-label="MAPA, inicio">
+		<a class="brand" href="/" aria-label="Diabetes en Argentina, inicio">
 			<Logo />
-			<span class="word">MAPA</span>
-			<span class="tag">Atlas de la diabetes en Argentina</span>
+			<span class="word">Diabetes en Argentina</span>
 		</a>
 		<nav aria-label="Principal">
 			{#each nav as n (n.href)}
-				<a href={n.href} aria-current={here.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
+				<a href={n.href} aria-current={inNav(n.href) ? 'page' : undefined}>{n.label}</a>
 			{/each}
 		</nav>
 		<div class="tools">
@@ -64,10 +68,10 @@
 <footer>
 	<div class="wrap foot">
 		<div>
-			<div class="fbrand"><Logo size={22} /> MAPA</div>
+			<div class="fbrand"><Logo size={22} /> Diabetes en Argentina</div>
 			<p class="small">
-				Proyecto académico · CIITI 2026. Los datos describen localidades urbanas de 5.000 o más
-				habitantes y no permiten sacar conclusiones sobre causas.
+				Datos públicos para explorar la salud y el contexto por provincia. Consultá la población
+				y el período de cada indicador antes de compararlos.
 			</p>
 		</div>
 		<div class="small">
@@ -121,14 +125,6 @@
 		font-size: 1.45rem;
 		font-weight: 600;
 		letter-spacing: 0.04em;
-	}
-	.tag {
-		font-size: 0.78rem;
-		color: var(--ink-2);
-		border-left: 1px solid var(--axis);
-		padding-left: 0.7rem;
-		line-height: 1.2;
-		max-width: 11rem;
 	}
 	nav {
 		display: flex;
@@ -192,9 +188,6 @@
 		max-width: 38rem;
 	}
 	@media (max-width: 860px) {
-		.tag {
-			display: none;
-		}
 		.bar {
 			flex-wrap: nowrap;
 			gap: 0.6rem;

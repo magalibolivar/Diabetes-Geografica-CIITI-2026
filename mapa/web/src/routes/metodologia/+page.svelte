@@ -54,7 +54,7 @@
 		<div class="eyebrow">Metodología</div>
 		<h1>Cómo se hizo, y qué no se puede decir con estos datos.</h1>
 		<p class="lede">
-			MAPA muestra cifras oficiales sin retocarlas. Lo que sigue explica de dónde vienen, cómo se leen y
+			El sitio muestra cifras de fuentes públicas. Lo que sigue explica de dónde vienen, cómo se leen y
 			dónde conviene desconfiar, incluso de nosotros.
 		</p>
 	</header>
@@ -99,8 +99,8 @@
 			</table>
 		</div>
 		<p class="note">
-			Los datos no son de un mismo año: la encuesta es de 2018, el NBI de 2010 y la cobertura y la densidad
-			del Censo 2022. Cada cifra muestra su período. No reflejan lo ocurrido después.
+			Los datos no son de un mismo año: la encuesta es de 2018; el NBI que muestra el mapa, la cobertura y la densidad
+			provienen del Censo 2022. La serie histórica de NBI 2010 se conserva por separado. No se comparan como si describieran el mismo momento.
 		</p>
 	</section>
 
@@ -152,7 +152,7 @@
 			<dt>Diferencia con el país</dt>
 			<dd>
 				Valor de la provincia menos el total del país, en puntos porcentuales. Si la fuente no publica
-				total (indicadores del Censo y la EPH), se usa el promedio simple de las 24 jurisdicciones y se
+				total (algunos indicadores de contexto), se usa el promedio simple de las 24 jurisdicciones y se
 				aclara; no pondera por población.
 			</dd>
 			<dt>Colores del mapa</dt>
@@ -183,8 +183,8 @@
 			del IGN: las Malvinas en su lugar y la Antártida con las islas australes en un recuadro aparte.
 		</p>
 		<p>
-			Esos territorios <strong>no tienen datos</strong>: la encuesta no los releva, por eso se ven en gris. Los
-			datos de la provincia describen solo sus localidades urbanas de la Isla Grande. Al tocar cualquiera de
+			Esos territorios <strong>no tienen datos separados en el mapa</strong>, por eso se ven en gris. Para la ENFR,
+			los datos de la provincia describen solo sus localidades urbanas de la Isla Grande. Al tocar cualquiera de
 			ellos se abre la ficha de la provincia.
 		</p>
 		<p>
@@ -204,7 +204,7 @@
 					marca {mostFlagged.n} de las 24 provincias. Mirá siempre la marca antes de comparar.
 				</li>
 			{/if}
-			<li><strong>Cifras de 2018 y anteriores:</strong> pueden haber cambiado.</li>
+			<li><strong>Años distintos:</strong> la ENFR corresponde a 2018 y los indicadores censales actuales a 2022. No describen necesariamente la situación presente.</li>
 			<li><strong>Sin causalidad:</strong> las comparaciones son descriptivas.</li>
 		</ul>
 	</section>

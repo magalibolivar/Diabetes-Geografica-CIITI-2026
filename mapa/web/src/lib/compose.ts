@@ -130,6 +130,10 @@ export function buildAtlas(
 
 	const values: Atlas['values'] = {};
 	for (const o of observations) {
+		// Un indicador puede conservar versiones censales históricas. La vista principal usa
+		// explícitamente el período más reciente, sin depender del orden de la respuesta API.
+		const previous = values[o.indicator]?.[o.jurisdiction];
+		if (previous && previous.period >= o.period) continue;
 		(values[o.indicator] ??= {})[o.jurisdiction] = {
 			value: o.value,
 			cv: o.cv,

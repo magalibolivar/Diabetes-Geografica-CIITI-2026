@@ -155,7 +155,7 @@
 					onclick={() => onselect?.(ex.belongsTo)}
 					onkeydown={(e) => key(e, ex.belongsTo)}
 				>
-					<title>{ex.label}: sin datos en esta encuesta</title>
+					<title>{ex.label}: sin datos en este indicador</title>
 					{#if ex.frame}
 						<rect class="frame" x={ex.frame.x} y={ex.frame.y} width={ex.frame.width} height={ex.frame.height} rx="8" />
 					{/if}

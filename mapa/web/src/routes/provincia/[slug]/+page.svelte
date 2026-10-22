@@ -109,8 +109,8 @@
 	{#if data.slug === 'tierra-del-fuego'}
 		<aside class="tdf card">
 			<strong>Sobre esta provincia.</strong> Tierra del Fuego, Antártida e Islas del Atlántico Sur también incluye
-			las Islas Malvinas, la Antártida Argentina y las islas australes. La encuesta no releva esos territorios:
-			los datos de esta ficha describen solo sus localidades urbanas de la Isla Grande.
+			las Islas Malvinas, la Antártida Argentina y las islas australes. La ENFR no releva esos territorios:
+			sus datos de salud describen solo localidades urbanas de la Isla Grande. Los indicadores censales corresponden a otro año y población.
 		</aside>
 	{/if}
 
@@ -155,6 +155,7 @@
 						<div class="irow">
 							<div class="label">
 								<strong>{ind.label}</strong>
+								<small>{r.v.period}</small>
 								{#if r.v.reliability === 'unreliable' || r.v.reliability === 'caution'}
 									<span class="flag" class:caution={r.v.reliability === 'caution'}>
 										{RELIABILITY_TEXT[r.v.reliability].short}

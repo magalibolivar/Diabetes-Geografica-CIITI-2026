@@ -75,8 +75,12 @@ teniendo el defecto.
 
 ## 5. Pendientes de verificar
 
-- **NBI**: el CSV dice `nbi_2010_pct` y el archivo se llama `serie_nbi_2022.xlsx`. El script
-  toma la columna 2010; confirmar contra la planilla que no hay un dato 2022 utilizable.
+- **NBI**: el CSV histórico mantiene `nbi_2010_pct` intacto. El mapa carga por separado
+  `nbi_2022_hogares.csv`, extraído de los conteos del Cuadro 2 de `serie_nbi_2022.xlsx`
+  y cotejado con los porcentajes del Cuadro 3. Son hogares censados en 2022, no la
+  población adulta urbana de la ENFR 2018. No se calculan variaciones 2010-2022:
+  en el propio libro oficial, el Cuadro 1 presenta 9,1% para 2010, mientras que
+  los conteos del Cuadro 2 y el porcentaje del Cuadro 3 dan 9,2% al redondear.
 - **«Sin cobertura de salud»**: confirmar qué categorías del Censo 2022 se sumaron (¿entra
   «programas o planes estatales»?) para que la etiqueta no engañe.
 - **Densidad de Tierra del Fuego**: ajustada a 8,6 hab/km² (oficial 0,20). Está en las notas

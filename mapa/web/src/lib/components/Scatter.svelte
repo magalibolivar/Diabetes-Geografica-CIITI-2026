@@ -124,6 +124,12 @@
 			</label>
 		{/each}
 	</div>
+	<p class="periods">
+		Períodos: {ix.label} ({ix.lineage[0]?.referencePeriod ?? 'sin año'}) y {iy.label} ({iy.lineage[0]?.referencePeriod ?? 'sin año'}).
+		{#if ix.lineage[0]?.referencePeriod !== iy.lineage[0]?.referencePeriod}
+			Estas cifras describen años distintos; la relación entre ellas no indica causas.
+		{/if}
+	</p>
 
 	<div class="plot">
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -218,6 +224,7 @@
 		gap: 1rem;
 		margin-bottom: 1rem;
 	}
+	.periods { color: var(--ink-2); font-size: .85rem; line-height: 1.45; margin: 0 0 1rem; }
 	label {
 		display: grid;
 		gap: 0.3rem;
