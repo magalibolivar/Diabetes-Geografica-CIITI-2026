@@ -1,13 +1,13 @@
 # 📈 Guía de Resultados, Tablas y Figuras — Comparativa Argentina vs. Estados Unidos
-### *Determinantes geoespaciales de la diabetes tipo 2 en la Argentina y los Estados Unidos (CIITI 2026)*
+### *Determinantes geoespaciales de la diabetes tipo 2 en la Argentina y los Estados Unidos (CIITI 2026 / CoNaIISI)*
 
 ---
 
 ## 📌 1. Visión General de los Resultados
 
-Esta carpeta reúne toda la **evidencia cuantitativa, tablas estadísticas formales y figuras cartográficas y analíticas de alta resolución (220 DPI)** generadas por el pipeline científico para el **CIITI 2026 / CoNaIISI**.
+Esta carpeta reúne toda la **evidencia cuantitativa, tablas estadísticas formales y figuras cartográficas y analíticas de alta resolución (220 DPI)** generadas directamente por el motor reproducible ([`Pipeline/pipeline_comparativa_argentina_usa.py`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Pipeline/pipeline_comparativa_argentina_usa.py)).
 
-Mientras que el texto del paper expone la argumentación teórica, aquí se centralizan los valores empíricos: correlaciones ($r$), coeficientes de regresión ($\beta$), diagnósticos de multicolinealidad (VIF) y validación cruzada de Machine Learning ($R^2$, LOOCV, MAE).
+Todas las cifras coinciden de forma exacta con el manuscrito en Markdown ([`Paper/Paper_Comparativo_Argentina_USA.md`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Paper/Paper_Comparativo_Argentina_USA.md)) y en Word ([`Paper/Paper_Comparativo_Argentina_USA_2026.docx`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Paper/Paper_Comparativo_Argentina_USA_2026.docx)).
 
 ---
 
@@ -17,18 +17,18 @@ Mientras que el texto del paper expone la argumentación teórica, aquí se cent
 Propuesta_Argentiva_VS_Estados_Unidos/Resultados/
 │
 ├── 📊 Tablas Estadísticas (.csv):
-├── tabla1_resumen_comparativo.csv       <-- Comparación de medias, medianas y rangos (51 estados vs. 24 provs)
-├── tabla2_ols_coeficientes.csv          <-- Regresiones OLS con errores robustos HC3 y factores VIF
-├── tabla3_diagnostico_modelos.csv       <-- Evaluación Machine Learning: OLS vs Random Forest y CV
+├── tabla1_resumen_comparativo.csv       <-- Comparación de medias, DE, Moran's I y cobertura (51 estados vs. 24 provs)
+├── tabla2_ols_coeficientes.csv          <-- Regresiones OLS con errores robustos HC3, VIF y constructos explícitos
+├── tabla3_diagnostico_modelos.csv       <-- Evaluación simétrica LOOCV y 5-Fold: OLS, Ridge, Univariado y Random Forest
 ├── tabla4_ranking_extremos.csv          <-- Jurisdicciones con mayor y menor prevalencia
-├── tabla_comparativa_resumen.csv        <-- Síntesis consolidada de indicadores
+├── tabla_comparativa_resumen.csv        <-- Síntesis consolidada con IC95% y correlaciones con/sin CABA
 │
 ├── 🖼️ Figuras Científicas (220 DPI):
-├── figura1_mapas_comparativos.png       <-- Mapas coropléticos unificados de EE.UU. y Argentina
-├── figura2_factores_riesgo.png          <-- Cartografía comparada de obesidad y sedentarismo
-├── figura3_brecha_tratamiento.png       <-- Ranking horizontal de tratamiento farmacológico y barrera de costo
+├── figura1_mapas_comparativos.png       <-- Mapas coropléticos unificados e Índice I de Moran
+├── figura2_factores_riesgo.png          <-- Cartografía comparada de obesidad e inactividad física (tiempo libre vs IPAQ)
+├── figura3_brecha_tratamiento.png       <-- Cobertura de tratamiento farmacológico en Arg vs. barrera de costo en EE.UU.
 ├── figura4_matriz_correlaciones.png     <-- Matrices de calor de Pearson cruzadas
-├── figura5_modelos_dispersion.png       <-- Dispersión Pobreza vs. Diabetes y Screening vs. NBI
+├── figura5_modelos_dispersion.png       <-- Dispersión Pobreza vs. Diabetes (IC95%) y NBI vs. Screening (r = -0,81)
 ├── figura_comparativa_argentina_usa.png <-- Infografía comparativa global unificada
 │
 └── 📖 README_RESULTADOS.md              <-- Este documento explicativo
@@ -42,71 +42,58 @@ Propuesta_Argentiva_VS_Estados_Unidos/Resultados/
 📄 **Archivo:** [`tabla1_resumen_comparativo.csv`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/tabla1_resumen_comparativo.csv)
 
 * **Prevalencia media de diabetes:**
-  * **Argentina:** **12,7%** (con rango de 8,8% a 17,3%).
-  * **Estados Unidos:** **10,2%** (con rango de 6,8% a 14,8%).
-  * *Hallazgo:* Argentina presenta, en promedio poblacional, **mayor prevalencia que Estados Unidos**.
-* **Sedentarismo (Inactividad física):**
-  * **Argentina:** **45,9%** de los adultos es sedentario (en Formosa alcanza el 69,1%).
-  * **EE.UU.:** **23,8%** promedio.
-  * *Hallazgo:* El sedentarismo en Argentina casi duplica al de EE.UU.
-* **Cobertura de salud:**
-  * **Argentina:** El **35,6%** de la población depende exclusivamente del subsistema público gratuito (en el norte supera el 50-55%).
-  * **EE.UU.:** Solo el **10,9%** carece de seguro médico formal.
-* **Screening preventivo (Medición de glucemia en sangre):**
-  * **EE.UU.:** Más del **85%** de la población se testea rutinariamente.
-  * **Argentina:** Media del 74,8%, pero con una brecha crítica: CABA testea al **92,9%**, mientras que en Chaco o Santiago del Estero el **40% de los adultos nunca se midió la glucosa**.
+  * **Argentina:** **$13,0\%$** media simple interprovincial ($\text{DE muestral } 2,1\%$; $\text{DE poblacional } 2,06\%$; $\text{Var}(y) = 4,24$) y **$12,7\%$** total nacional ponderado (rango: $8,8\%$ CABA a $17,3\%$ San Luis). Incluye diagnóstico autorreportado de *"diabetes o glucemia elevada"* (ENFR Cuadro 7.3).
+  * **Estados Unidos:** **$10,2\%$** media estatal ($\text{DE } 1,8\%$; mediana $10,0\%$; rango: $6,8\%$ Colorado a $14,8\%$ Misisipi). Mide diabetes diagnosticada excluyendo prediabetes (`DIABETE3`).
+* **Autocorrelación espacial ($\text{Índice } I \text{ de Moran}$):**
+  * **EE.UU.:** **$I = +0,59$** ($p < 0,001$), confirmando un fuerte agrupamiento espacial en el *Cinturón de la Diabetes*.
+  * **Argentina:** **$I = +0,33$** ($p = 0,039$), agrupamiento moderado concentrado en Cuyo y región pampeana occidental.
+* **Inactividad física / Baja actividad física:**
+  * **Argentina:** **$46,2\%$** media provincial ($45,9\%$ nacional) de baja actividad física medida con el cuestionario multidominio **IPAQ** (Cuadro 3.1).
+  * **EE.UU.:** **$25,8\%$** media estatal ($23,8\%$ nacional) de ausencia de actividad física recreativa en el tiempo libre (`_TOTINDA`).
+* **Cobertura de salud y Tratamiento farmacológico:**
+  * **Población sin seguro médico formal:** En Argentina promedia el **$37,3\%$** provincial ($35,6\%$ nacional en Censo 2022); en EE.UU. promedia el **$11,0\%$** ($10,9\%$ nacional).
+  * **Screening glucémico:** $>85\%$ en EE.UU. frente a una media de **$74,8\%$** en Argentina ($60,3\%$ en Chaco a $92,9\%$ en CABA).
+  * **Cobertura de tratamiento farmacológico activo (y brecha):** En Argentina la cobertura activa promedia el **$54,4\%$** de los diagnosticados (lo que equivale a una **brecha media sin tratamiento del $45,6\%$**, oscilando entre $32,7\%$ de cobertura en La Pampa y $70,0\%$ en Santa Cruz y Tierra del Fuego).
 
 ---
 
-### B. Tabla 2: Coeficientes de Regresión OLS Multivariada
+### B. Tabla 2: Coeficientes de Regresión OLS Multivariada (Errores Robustos HC3 y VIF)
 📄 **Archivo:** [`tabla2_ols_coeficientes.csv`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/tabla2_ols_coeficientes.csv)
 
-Aplica mínimos cuadrados ordinarios con **errores estándar robustos HC3**:
-1. **En Estados Unidos (Relaciones lineales robustas):**
-   * **Obesidad:** $\beta = +0,177$ ($p < 0,001$, VIF = 3,7).
-   * **Pobreza de ingresos:** $\beta = +0,111$ ($p = 0,042$, VIF = 3,3). A mayor pobreza, mayor diabetes detectada.
-   * **Barrera de costo médico:** $\beta = +0,257$ ($p = 0,008$, VIF = 2,4).
-2. **En Argentina (Desacople por subdiagnóstico):**
-   * **Pobreza:** $\beta = -0,047$ ($p = 0,55$, no significativo). La pobreza no predice más diabetes en la encuesta porque las provincias más pobres tienen menor acceso a screening y confirmación bioquímica.
-   * **Prueba F conjunta:** $F = 1,84$ ($p = 0,16$, no significativo), comprobando matemáticamente los límites de transferir modelos de países centrales a periferias con subdiagnóstico.
+1. **En Estados Unidos ($N=51$, $R^2 = 0,891$, $R^2_{\text{adj}} = 0,878$, $F = 73,7, p < 0,001$):**
+   * **Obesidad ($\text{IMC} \ge 30$):** $\beta = +0,180$ ($p < 0,001$, $\text{VIF} = 2,2$).
+   * **Inactividad en tiempo libre:** $\beta = +0,095$ ($p = 0,026$, $\text{VIF} = 2,5$).
+   * **Bajos ingresos ($<\text{USD } 25\text{k}$):** $\beta = +0,137$ ($p = 0,004$, $\text{VIF} = 4,0$).
+   * **Secundario incompleto:** $\beta = +0,202$ ($p = 0,001$, $\text{VIF} = 4,4$).
+   * **Sin seguro (18–64 años):** $\beta = -0,096$ ($p = 0,006$, $\text{VIF} = 1,5$).
+2. **En Argentina ($N=24$, $R^2 = 0,264$, $R^2_{\text{adj}} = 0,059$, $F = 1,29, p = 0,31$):**
+   * Ningún predictor alcanza significancia estadística individual al $5\%$ (Obesidad $\beta = +0,053, p = 0,831$; Baja actividad IPAQ $\beta = -0,002, p = 0,983$; Pobreza EPH $\beta = +0,017, p = 0,888$; Sin obra social $\beta = -0,056, p = 0,555$; $\log_{10}(\text{Densidad})$ $\beta = -1,162, p = 0,397$).
 
 ---
 
-### C. Tabla 3: Diagnóstico de Modelos y Machine Learning
+### C. Tabla 3: Evaluación Simétrica de Modelos (LOOCV y 5-Fold CV en Ambos Países)
 📄 **Archivo:** [`tabla3_diagnostico_modelos.csv`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/tabla3_diagnostico_modelos.csv)
 
-* **En Estados Unidos ($N=51$):**
-  * OLS in-sample: $R^2 = \mathbf{0,912}$.
-  * Random Forest en 5-Fold CV: $R^2 = \mathbf{0,806}$, $\text{MAE} = 0,59\%$. Los algoritmos generalizan sólidamente.
-* **En Argentina ($N=24$):**
-  * OLS in-sample: $R^2 = 0,385$.
-  * Leave-One-Out CV: El $R^2$ colapsa a **$-0,291$ (negativo)**.
-  * Random Forest en CV: Da **$-0,324$ (negativo)**.
-  * *Aporte para el CIITI:* Un $R^2$ negativo demuestra que el algoritmo supervisado sobreajusta y falla más que predecir la media constante, justificando el enfoque analítico geoespacial descriptivo.
+* **Estimador Naive Baseline (Media constante $\bar{y}$):** $R^2 = 0,000$ ($\text{MAE} = 1,53\%$ en EE.UU.; $\text{MAE} = 1,59\%$ y $\text{Var}(y) = 4,24$ en Argentina).
+* **OLS Multivariado (5 predictores, LOOCV / 5-Fold CV):**
+  * **EE.UU.:** $R^2 = +0,859 \text{ / } +0,842$ ($\text{MAE} = 0,56\% \text{ / } 0,59\%$).
+  * **Argentina:** $R^2 = -0,701 \text{ / } -1,294$ ($\text{MAE} = 2,12\% \text{ / } 2,43\%$). En LOOCV el $\text{MSE} = 7,21$ supera en un $70,1\%$ a la varianza base ($7,21 / 4,24 = 1,701$).
+* **Regresión Regularizada Ridge ($\alpha = 10$, LOOCV / 5-Fold CV):**
+  * **EE.UU.:** $R^2 = +0,858 \text{ / } +0,856$ ($\text{MAE} = 0,58\% \text{ / } 0,58\%$).
+  * **Argentina:** $R^2 = -0,311 \text{ / } -0,429$ ($\text{MAE} = 1,87\% \text{ / } 1,97\%$).
+* **OLS Parsimonioso Univariado (1 solo predictor: Obesidad, LOOCV / 5-Fold CV):**
+  * **EE.UU.:** $R^2 = +0,532 \text{ / } +0,521$ ($\text{MAE} = 1,02\% \text{ / } 1,03\%$).
+  * **Argentina:** $R^2 = -0,100 \text{ / } -0,023$ ($\text{MAE} = 1,58\% \text{ / } 1,56\%$).
+* **Random Forest Regressor (LOOCV / 5-Fold CV):**
+  * **EE.UU.:** $R^2 = +0,815 \text{ / } +0,802$ ($\text{MAE} = 0,67\% \text{ / } 0,66\%$).
+  * **Argentina:** $R^2 = -0,657 \text{ / } -0,802$ ($\text{MAE} = 2,07\% \text{ / } 2,20\%$).
 
 ---
 
 ### D. Tabla 4: Ranking de Jurisdicciones Extremas
 📄 **Archivo:** [`tabla4_ranking_extremos.csv`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/tabla4_ranking_extremos.csv)
 
-* **Máximas en EE.UU.:** Misisipi (`14,8%`) y Virginia Occidental (`13,9%`) (Cinturón de la Diabetes del sur profundo).
-* **Mínimas en EE.UU.:** Colorado (`6,8%`) y Utah (`7,5%`) (cultura de actividad al aire libre y bajo tabaquismo).
-* **Máximas en Argentina:** San Luis (`17,3%`) y San Juan (`15,9%`) (Cuyo, alto sedentarismo).
-* **Mínimas en Argentina:** CABA (`8,8%`, alta cobertura y screening) frente a Jujuy (`8,9%`) y Chaco (`10,3%`) (bajas por subdiagnóstico por falta de acceso a análisis clínicos).
-
----
-
-## 4. 🖼️ Catálogo de Figuras Científicas (220 DPI)
-
-* 🗺️ [**`figura1_mapas_comparativos.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura1_mapas_comparativos.png):  
-  Cartografía coroplética bajo escala cromática continua común unificada, revelando la concentración del Diabetes Belt en EE.UU. frente al gradiente Cuyo-Patagonia en Argentina.
-* ⚖️ [**`figura2_factores_riesgo.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura2_factores_riesgo.png):  
-  Matriz de 4 mapas comparando la geografía de la obesidad adulta ($\text{IMC} \ge 30$) y el sedentarismo en ambas naciones.
-* 💊 [**`figura3_brecha_tratamiento.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura3_brecha_tratamiento.png):  
-  Ranking horizontal de tratamiento farmacológico en las 24 provincias argentinas y gráfico de barras de no adherencia por barrera de costo en EE.UU.
-* 🔗 [**`figura4_matriz_correlaciones.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura4_matriz_correlaciones.png):  
-  Matrices de calor de correlación de Pearson cruzadas ($5 \times 5$) entre variables epidemiológicas y socioeconómicas.
-* 📈 [**`figura5_modelos_dispersion.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura5_modelos_dispersion.png):  
-  *(a) Dispersión Pobreza vs. Diabetes (comparando pendientes entre EE.UU. y Argentina) y (b) Pobreza Estructural NBI vs. Acceso a Screening Glucémico en Argentina ($r = -0.62, p < 0.001$).*
-* 🌟 [**`figura_comparativa_argentina_usa.png`**](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/figura_comparativa_argentina_usa.png):  
-  Póster infográfico consolidado para la exposición oral en el CIITI 2026.
+* **Máximas en EE.UU.:** Misisipi ($14,8\%$, bajos ingresos $29,4\%$) y Virginia Occidental ($14,5\%$, bajos ingresos $23,5\%$).
+* **Mínimas en EE.UU.:** Colorado ($6,8\%$, bajos ingresos $13,2\%$) y Utah ($7,1\%$, bajos ingresos $11,6\%$).
+* **Máximas en Argentina:** San Luis ($17,3\%$, pobreza EPH $31,3\%$) y San Juan ($15,9\%$, pobreza EPH $33,1\%$, obesidad $34,4\%$).
+* **Mínimas en Argentina:** CABA ($8,8\%$, menor obesidad $17,0\%$ y máximo screening $92,9\%$) y Jujuy ($8,9\%$, obesidad $31,1\%$ pero bajo screening $71,3\%$).

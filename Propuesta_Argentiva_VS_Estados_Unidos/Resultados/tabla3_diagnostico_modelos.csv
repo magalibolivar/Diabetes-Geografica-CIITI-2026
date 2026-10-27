@@ -1,5 +1,7 @@
-﻿Modelo y Algoritmo,EE.UU. R² (Ajustado),EE.UU. Error MAE,Argentina R² (Ajustado),Argentina Error MAE,Diagnóstico Metodológico
-Estimador Naive Baseline (Media constante ȳ),0.000,1.53%,0.000,1.59%,"Referencia base (R²=0): dispersión intrínseca sin covariables (Var=4,24)"
-OLS Multivariado (Muestra completa),0.891 (0.878),0.50%,0.264 (0.059),1.44%,EE.UU. altamente significativo (p<0.001); Argentina no significativo (p=0.31)
-"Validación Cruzada OLS (LOOCV en Arg, 5-Fold en US)",0.842,0.59%,-0.701,2.12%,Marcada degradación predictiva en Arg (R² < 0): el error supera al estimador baseline
-Random Forest Regressor (5-Fold CV),0.802,0.66%,-0.802,2.20%,Sólido ajuste en EE.UU.; en Arg falla por distorsión de subdiagnóstico y reducido N=24
+﻿Modelo y Esquema de Evaluación,EE.UU. R²,EE.UU. MAE,Argentina R²,Argentina MAE,Diagnóstico Metodológico
+Estimador Naive Baseline (Media constante ȳ),0.000,1.53%,0.000,1.59%,Referencia base (R²=0): dispersión intrínseca Var(y)=4.24 (DE=2.06%)
+"OLS Multivariado 5 vars (In-Sample, muestra completa)",0.891 (adj 0.878),0.50%,0.264 (adj 0.059),1.44%,"EE.UU. significativo (F=73.3, p<0.001); Arg no significativo (F=1.29, p=0.31)"
+OLS Multivariado 5 vars (LOOCV / 5-Fold CV),0.859 / 0.842,0.56% / 0.59%,-0.701 / -1.294,2.12% / 2.43%,Sobreajuste severo en Arg (MSE LOOCV=7.21 > Var(y)=4.24)
+Regresión Regularizada Ridge α=10 (LOOCV / 5-Fold CV),0.858 / 0.856,0.58% / 0.58%,-0.311 / -0.429,1.87% / 1.97%,La penalización L2 atenúa la varianza en Arg pero mantiene R²_CV < 0
+OLS Parsimonioso 1 predictor: Obesidad (LOOCV / 5-Fold),0.532 / 0.521,1.02% / 1.03%,-0.100 / -0.023,1.58% / 1.56%,Incluso con 1 solo predictor sin sobreparametrización no hay señal en Arg (R²<0)
+Random Forest Regressor (LOOCV / 5-Fold CV),0.815 / 0.802,0.67% / 0.66%,-0.657 / -0.802,2.07% / 2.20%,Sólida generalización en EE.UU.; fallo fuera de muestra en Arg en ambos esquemas

@@ -1,10 +1,11 @@
-﻿Indicador,Estados Unidos (CDC BRFSS),Argentina (ENFR / INDEC)
+﻿Indicador,Estados Unidos (CDC BRFSS 2015),Argentina (ENFR 2018 / INDEC)
 N unidades territoriales,51 estados (50 + D.C.),24 jurisdicciones (23 + CABA)
-Población representada,~320 millones (441.456 enc.),~44 millones (urbana 18+ años)
-Prevalencia media diabetes,"10.2% (desv. est. 1,8%) [Mediana 10,0%]","13.0% media prov. (12,7% total nacional)"
+Población representada,~320 millones (441.456 enc. 18+),"~44 mill. total (~29,5 mill. urbana 18+; N=29.224)"
+Prevalencia media diabetes,10.2% (DE 1.9%; Mediana 10.0%),"13.0% media prov. (DE 2.1%; 12,7% nac.)"
 Rango de prevalencia,6.8% (Colorado) – 14.8% (Misisipi),8.8% (CABA) – 17.3% (San Luis)
-Prevalencia media obesidad,"29.3% media est. (28,6% total nac.)","26.7% media prov. (25,6% total nac.)"
-Prevalencia sedentarismo,"25.8% media est. (23,8% total nac.)","46.2% media prov. (45,9% total nac.)"
-Población sin seguro médico,"11.0% media est. (10,9% total nac.)","37.3% media prov. (35,6% total censo)"
-Tasa de screening glucémico,>85% (pesquisa clínica rutinaria),"Media 74,8% (60,3% Chaco a 92,9% CABA)"
-Brecha de tratamiento activo,Barrera de costo farmacológico / copago,"Media 54,4% (32,7% La Pampa a 70,0% Santa Cruz)"
+Autocorrelación espacial (I de Moran),"I = +0.59 (p < 0,001; fuerte clustering)",I = +0.33 (p = 0.039; moderado)
+Prevalencia media obesidad (IMC≥30),"29.3% media est. (28,6% total nac.)","26.7% media prov. (25,6% total nac.)"
+Inactividad física / Baja act. (IPAQ),"25.8% tiempo libre (23,8% nac.)","46.2% baja act. IPAQ (45,9% nac.)"
+Población sin seguro médico formal,"11.0% media est. (10,9% total nac.)","37.3% media prov. (35,6% Censo 2022)"
+Tasa de screening glucémico,>85% (pesquisa clínica rutinaria),"Media 74.3% (60,3% Chaco a 92,9% CABA)"
+Cobertura de tratamiento (y brecha),"Barrera de costo médico / copago (media 13,2%)","Cobertura 53.9% [Brecha 46.1%] (32,7%–70,0%)"

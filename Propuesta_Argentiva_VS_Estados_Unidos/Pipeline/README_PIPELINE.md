@@ -36,13 +36,15 @@ El script se divide en 5 etapas secuenciales automatizadas:
 * Corrige nombres de entidades espaciales (como la homologación de *Ciudad Autónoma de Buenos Aires* a *CABA*).
 * Filtra los 49 estados continentales de EE.UU. para la visualización cartográfica principal sin distorsión por Alaska/Hawaii.
 
-### Paso 2: Modelado Estadístico y Comparación Empírica
-* **Para Estados Unidos ($N=51$):**
-  * Ajusta un modelo de regresión lineal múltiple (OLS) con errores estándar robustos a heterocedasticidad (HC3).
-  * Evalúa un modelo no lineal de **Random Forest Regressor** (300 estimadores, profundidad 5) con **validación cruzada K-Fold ($k=5$)**, obteniendo $R^2_{\text{CV}} = 0,81$.
-* **Para Argentina ($N=24$):**
-  * Ajusta el modelo OLS con variables conceptualmente equivalentes.
-  * Ejecuta una validación cruzada **Leave-One-Out (LOOCV)** iterando provincia por provincia ($N=24$ iteraciones) para evaluar la predictibilidad fuera de muestra real, demostrando que $R^2_{\text{LOOCV}} \le 0$ (sobreajuste por potencia muestral).
+### Paso 2: Modelado Estadístico, Autocorrelación Espacial y Comparación Empírica
+* Calcula el **Índice $I$ de Moran** global de autocorrelación espacial (contigüidad Queen con 9.999 permutaciones de Monte Carlo) para EE.UU. ($I = +0,59, p < 0,001$) y Argentina ($I = +0,33, p = 0,039$).
+* Calcula correlaciones paramétricas de **Pearson ($r$) con IC95%** (transformación $z$ de Fisher), no paramétricas de **Spearman ($\rho$)** y análisis de sensibilidad **con y sin CABA** ($r = +0,13$ en $N=24$ vs. $r = +0,40$ en $N=23$ entre screening y diabetes).
+* Ajusta modelos de regresión lineal múltiple (OLS) con errores estándar robustos a heterocedasticidad (**HC3**) y factores **VIF**.
+* Evalúa de forma **simétrica en ambos países** (mediante **LOOCV** y **5-Fold CV**) cuatro especificaciones frente al estimador naive baseline:
+  1. **OLS Multivariado (5 predictores):** $R^2_{\text{LOOCV}} = +0,859$ en EE.UU. vs. $-0,701$ en Argentina.
+  2. **Regresión Regularizada Ridge ($\alpha = 10$):** $R^2_{\text{LOOCV}} = +0,858$ en EE.UU. vs. $-0,311$ en Argentina.
+  3. **OLS Parsimonioso Univariado (1 predictor: Obesidad):** $R^2_{\text{LOOCV}} = +0,532$ en EE.UU. vs. $-0,100$ en Argentina.
+  4. **Random Forest Regressor:** $R^2_{\text{5-Fold}} = +0,802$ en EE.UU. vs. $-0,802$ en Argentina.
 
 ### Paso 3: Generación de la Tabla Comparativa
 * Construye un resumen en CSV ([`tabla_comparativa_resumen.csv`](file:///C:/Users/florr/Diabetes-Geografica-CIITI-2026/Propuesta_Argentiva_VS_Estados_Unidos/Resultados/tabla_comparativa_resumen.csv)) que compara:

@@ -92,15 +92,15 @@ Todos los datos utilizados provienen exclusivamente de **organismos oficiales y 
 
 ### B. Lo que se observa en Argentina 🇦🇷: "La paradoja del subdiagnóstico y la gestión pública"
 1. **La pobreza no correlaciona positivamente con la diabetes:**
-   * La pobreza monetaria de la EPH da $r = -0,19$ ($p=0,37$, no significativa) y el NBI da $r = -0,26$.
+   * La pobreza monetaria de la EPH da $r = -0,05$ ($p=0,82$, $\text{IC95\% } [-0,44; +0,36]$) y el NBI da $r = -0,22$ ($p=0,30$).
    * Provincias con alta pobreza estructural del norte (Chaco 10,3%, Formosa 12,1%, Jujuy 8,9%) declaran **menos diabetes** que distritos de mayor ingreso relativo como Cuyo y Centro (San Luis 17,3%, San Juan 15,9%, La Pampa 14,6%).
-2. **La causa oculta: El sesgo de subdiagnóstico:**
-   * En provincias del NOA y NEA, **hasta un 40% de los adultos jamás se midió la glucemia en su vida** (screening de apenas 60-61%).
-   * Al ser encuestas por autorreporte, quien no tiene acceso al control de laboratorio no sabe que tiene diabetes. En CABA, donde el 93% se testea, la prevalencia es del 8,8%.
-3. **La brecha de tratamiento farmacológico está desacoplada del dinero:**
-   * El porcentaje de personas con diabetes que recibe medicación varía entre un crítico **32,7% (La Pampa)** y un **70,0% (Santa Cruz y Tierra del Fuego)**.
-   * Crucialmente, la tasa de tratamiento **no correlaciona** con no tener obra social ($r = +0,12$) ni con la pobreza ($r = -0,19$).
-   * Provincias pobres con más del 50% de la gente atendida en el hospital público (como Formosa con 62,6% o Chaco con 54,2%) tienen coberturas de medicación muy superiores a provincias con menor pobreza estructural (La Pampa 32,7% o Chubut 38,3%). El acceso depende de la logística de atención primaria provincial y programas como Remediar, no de la billetera familiar.
+2. **La causa oculta: El sesgo de subdiagnóstico (y el rol de CABA):**
+   * En provincias del NOA y NEA, **hasta un 40% de los adultos jamás se midió la glucemia en su vida** (screening de apenas 60-61%, con correlación $r = -0,81, p < 0,001$ entre NBI y screening).
+   * Al ser encuestas por autorreporte, quien no tiene acceso al control de laboratorio no sabe que tiene diabetes. En CABA, donde el 92,9% se testea, la prevalencia es del 8,8% porque presenta la menor obesidad del país (17,0%). Si se excluye el outlier de CABA ($N=23$), el screening correlaciona positivamente con la diabetes declarada ($r = +0,40, p = 0,057$).
+3. **La cobertura de tratamiento farmacológico está desacoplada de tener obra social:**
+   * El porcentaje de personas con diabetes que recibe medicación promedia el **54,4%** provincial (brecha media de **45,6%**), variando entre un crítico **32,7% (La Pampa)** y un **70,0% (Santa Cruz y Tierra del Fuego)**.
+   * Crucialmente, la tasa de tratamiento **no correlaciona de forma regresiva** con no tener obra social ($r = -0,11, p=0,62$).
+   * Las tres provincias con más del 50% de la gente atendida exclusivamente en el hospital público (**Santiago del Estero 56,0%**, **Formosa 55,9%** y **Chaco 52,2%**) tienen coberturas de medicación (**59,7%**, **62,6%** y **54,2%**) muy superiores a provincias con menor pobreza estructural (La Pampa 32,7% o Chubut 38,3%). El acceso se apoya en la red de atención primaria provincial, la Ley 26.914 / PRODIABA y el Programa Remediar.
 4. **Impacto en Machine Learning:**
    * Con $N=24$ provincias y sesgos de screening, los modelos predictivos supervisados fallan al generalizar ($R^2_{\text{LOOCV}} \le 0$). Forzar modelos de Machine Learning produce sobreajuste; la respuesta científica honesta es un atlas analítico y geoespacial.
 

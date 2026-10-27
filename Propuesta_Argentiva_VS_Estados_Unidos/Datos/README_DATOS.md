@@ -66,12 +66,12 @@ Fuente base: INDEC y Secretaría de Gobierno de Salud (ENFR 2018), Censo Naciona
 | Columna | Tipo | Rango / Unidad | Fuente Oficial | Descripción |
 | :--- | :--- | :--- | :--- | :--- |
 | `provincia` | Texto | 24 nombres | INDEC | Nombre oficial de la jurisdicción político-administrativa |
-| `tasa_diabetes_pct` | Float | 8,8% – 17,3% | ENFR 2018 (Cuadro 7.3) | Prevalencia de diabetes autorreportada o glucemia elevada medida |
+| `tasa_diabetes_pct` | Float | 8,8% – 17,3% | ENFR 2018 (Cuadro 7.3) | Prevalencia de diabetes o glucemia elevada por autorreporte de diagnóstico médico previo |
 | `cv_diabetes_pct` | Float | 5,3% – 12,5% | ENFR 2018 (Cuadro 7.3) | Coeficiente de variación muestral de la tasa de diabetes (<15% es confiable) |
-| `tratamiento_diabetes_pct` | Float | 32,7% – 70,0% | ENFR 2018 (Cuadro 7.5) | Porcentaje de personas con diabetes bajo tratamiento farmacológico activo |
+| `tratamiento_diabetes_pct` | Float | 32,7% – 70,0% | ENFR 2018 (Cuadro 7.5) | Porcentaje de personas con diabetes bajo tratamiento farmacológico activo (pastillas o insulina) |
 | `medicion_glucemia_pct` | Float | 60,3% – 92,9% | ENFR 2018 (Cuadro 7.1) | Adultos que se midieron la glucemia alguna vez en la vida (screening) |
 | `obesidad_pct` | Float | 17,0% – 34,4% | ENFR 2018 (Cuadro 6.3) | Adultos con IMC $\ge 30$ según peso y talla autorreportados |
-| `inactividad_fisica_pct` | Float | 23,2% – 69,1% | ENFR 2018 (Cuadro 3.1) | Población con nivel bajo de actividad física (sedentarismo) |
+| `inactividad_fisica_pct` | Float | 23,2% – 69,1% | ENFR 2018 (Cuadro 3.1) | Población con nivel bajo de actividad física según cuestionario multidominio IPAQ |
 | `presion_elevada_pct` | Float | 26,6% – 52,2% | ENFR 2018 (Cuadro 8.3) | Prevalencia de presión arterial elevada autorreportada |
 | `colesterol_elevado_pct` | Float | 21,2% – 35,6% | ENFR 2018 (Cuadro 9.3) | Prevalencia de colesterol elevado autorreportado |
 | `tabaquismo_pct` | Float | 14,9% – 26,7% | ENFR 2018 (Cuadro 2.1) | Consumo habitual de tabaco |
